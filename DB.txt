@@ -1,0 +1,196 @@
+USE [MyApp]
+GO
+/****** Object:  Table [dbo].[Customer]    Script Date: 2/18/2026 8:22:26 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Customer](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](200) NULL,
+ CONSTRAINT [PK_Customer] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[FailedHttpPayload]    Script Date: 2/18/2026 8:22:26 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[FailedHttpPayload](
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+	[CreatedAtUtc] [datetime2](7) NOT NULL,
+	[CorrelationId] [nvarchar](64) NULL,
+	[TraceId] [nvarchar](64) NULL,
+	[SpanId] [nvarchar](64) NULL,
+	[RequestId] [nvarchar](64) NULL,
+	[Method] [nvarchar](16) NOT NULL,
+	[Path] [nvarchar](512) NOT NULL,
+	[StatusCode] [int] NOT NULL,
+	[RequestContentType] [nvarchar](128) NULL,
+	[ResponseContentType] [nvarchar](128) NULL,
+	[UserId] [nvarchar](128) NULL,
+	[RemoteIp] [nvarchar](64) NULL,
+	[HeadersJson] [nvarchar](max) NULL,
+	[RequestBody] [nvarchar](max) NULL,
+	[ResponseBody] [nvarchar](max) NULL,
+ CONSTRAINT [PK_FailedHttpPayload] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Order]    Script Date: 2/18/2026 8:22:26 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Order](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerId] [int] NOT NULL,
+	[OrderDateUtc] [datetime2](0) NOT NULL,
+	[Status] [nvarchar](32) NOT NULL,
+	[TotalAmount] [decimal](18, 2) NOT NULL,
+ CONSTRAINT [PK_Order] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[OrderItem]    Script Date: 2/18/2026 8:22:26 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OrderItem](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[OrderId] [int] NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[UnitPrice] [decimal](18, 2) NOT NULL,
+	[Quantity] [int] NOT NULL,
+ CONSTRAINT [PK_OrderItem] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[OutboxMessages]    Script Date: 2/18/2026 8:22:26 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OutboxMessages](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Type] [nvarchar](200) NOT NULL,
+	[PayloadJson] [nvarchar](max) NOT NULL,
+	[IdempotencyKey] [nvarchar](200) NOT NULL,
+	[Status] [tinyint] NOT NULL,
+	[AttemptCount] [int] NOT NULL,
+	[NextAttemptUtc] [datetime2](7) NULL,
+	[LockedUntilUtc] [datetime2](7) NULL,
+	[LockId] [uniqueidentifier] NULL,
+	[LastError] [nvarchar](2000) NULL,
+	[CreatedUtc] [datetime2](7) NOT NULL,
+	[ProcessedUtc] [datetime2](7) NULL,
+	[RowVersion] [timestamp] NOT NULL,
+ CONSTRAINT [PK_OutboxMessages] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Order] ADD  CONSTRAINT [DF_Order_Status]  DEFAULT (N'Draft') FOR [Status]
+GO
+ALTER TABLE [dbo].[Order] ADD  CONSTRAINT [DF_Order_TotalAmount]  DEFAULT ((0)) FOR [TotalAmount]
+GO
+ALTER TABLE [dbo].[OutboxMessages] ADD  CONSTRAINT [DF_Outbox_AttemptCount]  DEFAULT ((0)) FOR [AttemptCount]
+GO
+ALTER TABLE [dbo].[Order]  WITH CHECK ADD  CONSTRAINT [FK_Order_Customer] FOREIGN KEY([CustomerId])
+REFERENCES [dbo].[Customer] ([Id])
+GO
+ALTER TABLE [dbo].[Order] CHECK CONSTRAINT [FK_Order_Customer]
+GO
+ALTER TABLE [dbo].[OrderItem]  WITH CHECK ADD  CONSTRAINT [FK_OrderItem_Order] FOREIGN KEY([OrderId])
+REFERENCES [dbo].[Order] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[OrderItem] CHECK CONSTRAINT [FK_OrderItem_Order]
+GO
+ALTER TABLE [dbo].[OrderItem]  WITH CHECK ADD  CONSTRAINT [CK_OrderItem_Quantity_Positive] CHECK  (([Quantity]>(0)))
+GO
+ALTER TABLE [dbo].[OrderItem] CHECK CONSTRAINT [CK_OrderItem_Quantity_Positive]
+GO
+ALTER TABLE [dbo].[OrderItem]  WITH CHECK ADD  CONSTRAINT [CK_OrderItem_UnitPrice_NonNegative] CHECK  (([UnitPrice]>=(0)))
+GO
+ALTER TABLE [dbo].[OrderItem] CHECK CONSTRAINT [CK_OrderItem_UnitPrice_NonNegative]
+GO
+
+
+
+
+
+
+
+dotnet ef dbcontext scaffold ^
+"Data Source=JNTRD003\SQLEXPRESS;Initial Catalog=MyApp;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=30;" ^
+Microsoft.EntityFrameworkCore.SqlServer ^
+--context AppDbContext ^
+--context-dir Persistence/DbFirst ^
+--output-dir Persistence/DbFirst/Entities ^
+--namespace MyApp.Infrastructure.Persistence.DbFirst.Entities ^
+--context-namespace MyApp.Infrastructure.Persistence.DbFirst ^
+--table Customer --table Order --table OrderItem --table OutboxMessages ^
+--use-database-names ^
+--no-onconfiguring ^
+--force
+
+Scaffold-DbContext 'Server=JNTRD003\SQLEXPRESS;Database=MyApp;Trusted_Connection=True;TrustServerCertificate=True;Connection Timeout=30;' Microsoft.EntityFrameworkCore.SqlServer -Context AppDbContext -ContextDir 'Persistence/DbFirst' -OutputDir 'Persistence/DbFirst/Entities' -Namespace 'MyApp.Infrastructure.Persistence.DbFirst.Entities' -ContextNamespace 'MyApp.Infrastructure.Persistence.DbFirst' -Tables 'Customer','dbo.Order','OrderItem','OutboxMessages' -UseDatabaseNames -NoOnConfiguring -Force
+
+
+
+Application
+  DistributionCenters
+    Create
+      Command.cs
+      Handler.cs
+      Validator.cs
+      Mapping.cs (optional)
+    Edit
+      Command.cs
+      Handler.cs
+      Validator.cs
+    Delete
+      Command.cs
+      Handler.cs
+    GetById
+      Query.cs
+      Handler.cs
+      Dto.cs
+    GetAllPaginated
+      Query.cs
+      Handler.cs
+      Dto.cs
+
+
+
+ALBO
+
+
+
+DistributionCenters
+  Commands
+    CreateDistributionCenter
+      Command.cs
+      Handler.cs
+      Validator.cs
+    EditDistributionCenter
+      Command.cs
+      Handler.cs
+  Queries
+    GetDistributionCenterById
+      Query.cs
+      Handler.cs
+      Dto.cs
+
