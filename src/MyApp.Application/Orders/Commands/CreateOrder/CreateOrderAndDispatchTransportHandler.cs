@@ -37,7 +37,7 @@ public sealed class CreateOrderAndDispatchTransportHandler(
         var orderDateUtc = request.OrderDateUtc ?? DateTime.UtcNow;
 
         // wa¿ne: generuj OUTSIDE tx (retry mo¿e powtórzyæ delegate)
-        var correlationId = $"order-{Guid.NewGuid():N}";
+        var transportCorrelationId = $"order-{Guid.NewGuid():N}";
 
         // 1) TX: Order + Outbox w jednej transakcji (retry-safe)
         var tx = await uow.ExecuteInTransactionAsync(async c =>
@@ -73,7 +73,7 @@ public sealed class CreateOrderAndDispatchTransportHandler(
                 return MessageResult<TxResult>.Fail(save1.Errors);
 
             var dto = new TransportOrderExternalDto(
-                ExternalCorrelationId: correlationId,
+                ExternalCorrelationId: transportCorrelationId,
                 OrderId: order.Id,
                 CustomerId: order.CustomerId,
                 OrderDateUtc: order.OrderDateUtc,
@@ -87,7 +87,7 @@ public sealed class CreateOrderAndDispatchTransportHandler(
             // Outbox insert (Pending)
             var outboxId = outbox.EnqueuePending(
                 type: OutboxType,
-                idempotencyKey: correlationId, // to samo co idempotency header downstream
+                idempotencyKey: transportCorrelationId, // to samo co idempotency header downstream
                 payloadJson: payloadJson);
 
             // Save #2: utrwalamy outbox
@@ -110,7 +110,7 @@ public sealed class CreateOrderAndDispatchTransportHandler(
             // REKOMENDACJA: zmieñ typ/kontrakt na Guid (to jest prawdziwy identyfikator integracji)
             TransportOrderId = tx.Value.OutboxId,
             TransportStatus = sentNow ? "Sent" : "Queued",
-            CorrelationId = correlationId
+            TransportCorrelationId = transportCorrelationId
         };
 
         // przy outbox: stworzenie zamówienia jest SUCCESS, a wysy³ka jest eventual consistency

@@ -3,7 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using MyApp.Application.Abstractions.Persistence;
 using MyApp.Application.Orders.Dtos;
-using MyApp.Infrastructure.Persistence.DbFirst;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst;
 
 namespace MyApp.Infrastructure.Persistence.Repositories;
 

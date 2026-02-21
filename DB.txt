@@ -137,16 +137,16 @@ dotnet ef dbcontext scaffold ^
 "Data Source=JNTRD003\SQLEXPRESS;Initial Catalog=MyApp;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=30;" ^
 Microsoft.EntityFrameworkCore.SqlServer ^
 --context AppDbContext ^
---context-dir Persistence/DbFirst ^
---output-dir Persistence/DbFirst/Entities ^
---namespace MyApp.Infrastructure.Persistence.DbFirst.Entities ^
---context-namespace MyApp.Infrastructure.Persistence.DbFirst ^
+--context-dir Persistence/MicrosoftSqlServer/DbFirst ^
+--output-dir Persistence/MicrosoftSqlServer/DbFirst/Entities ^
+--namespace MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities ^
+--context-namespace MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst ^
 --table Customer --table Order --table OrderItem --table OutboxMessages ^
 --use-database-names ^
 --no-onconfiguring ^
 --force
 
-Scaffold-DbContext 'Server=JNTRD003\SQLEXPRESS;Database=MyApp;Trusted_Connection=True;TrustServerCertificate=True;Connection Timeout=30;' Microsoft.EntityFrameworkCore.SqlServer -Context AppDbContext -ContextDir 'Persistence/DbFirst' -OutputDir 'Persistence/DbFirst/Entities' -Namespace 'MyApp.Infrastructure.Persistence.DbFirst.Entities' -ContextNamespace 'MyApp.Infrastructure.Persistence.DbFirst' -Tables 'Customer','dbo.Order','OrderItem','OutboxMessages' -UseDatabaseNames -NoOnConfiguring -Force
+Scaffold-DbContext 'Server=JNTRD003\SQLEXPRESS;Database=MyApp;Trusted_Connection=True;TrustServerCertificate=True;Connection Timeout=30;' Microsoft.EntityFrameworkCore.SqlServer -Context AppDbContext -ContextDir 'Persistence/MicrosoftSqlServer/DbFirst' -OutputDir 'Persistence/MicrosoftSqlServer/DbFirst/Entities' -Namespace 'MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities' -ContextNamespace 'MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst' -Tables 'Customer','dbo.Order','OrderItem','OutboxMessages' -UseDatabaseNames -NoOnConfiguring -Force
 
 
 

@@ -21,5 +21,5 @@ public sealed class CreateOrderAndDispatchTransportResponse
     public int OrderId { get; set; }
     public Guid TransportOrderId { get; set; }
     public string TransportStatus { get; set; } = "";
-    public string CorrelationId { get; set; } = "";
+    public string TransportCorrelationId { get; set; } = "";
 }

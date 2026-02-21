@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using MyApp.Application.Abstractions.Persistence;
 using MyApp.Application.Common;
 using MyApp.Domain.Common;
-using MyApp.Infrastructure.Persistence.DbFirst;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst;
 using System.Text.RegularExpressions;
 
 namespace MyApp.Infrastructure.Persistence;

@@ -421,12 +421,12 @@ Behavior:
 - [x] DB exception mapping
 - [x] Transaction boundary centralized
 - [x] Partial success support
-
+- [x] Outbox pattern for integrations
+- [x] Save request & result to redis/db table when respond error
 ---
 
 ## Recommended
 
-- [ ] Outbox pattern for integrations
 - [ ] Idempotency store
 - [ ] Polly retry/circuit breaker
 - [ ] Rate limiting
@@ -478,19 +478,6 @@ MessageResult.Partial(...)
 - ✅ Predictable HTTP mapping
 - ✅ Observability-first design
 - ✅ Integration resilience ready
-
----
-
-# 1️⃣5️⃣ What Makes This “Senior-Level”
-
-- Explicit result modeling
-- Partial success support
-- Error localization pipeline
-- CorrelationId propagation end-to-end
-- DB exception sanitization
-- Transaction boundary enforcement
-- Clear separation of concerns
-- Integration safety patterns defined
 
 
 Then adapt namespaces if needed.

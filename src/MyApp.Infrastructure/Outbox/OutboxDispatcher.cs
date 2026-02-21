@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyApp.Application.Abstractions.Outbox;
-using MyApp.Infrastructure.Persistence.DbFirst;
-using MyApp.Infrastructure.Persistence.DbFirst.Entities;
-using MyApp.Infrastructure.Persistence.DbFirst.Enums;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Enums;
 namespace MyApp.Infrastructure.Outbox;
 
 public sealed class OutboxDispatcher(

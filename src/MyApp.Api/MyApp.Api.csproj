@@ -6,27 +6,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Asp.Versioning.Http" Version="8.1.1" />
-		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.12" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.12">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="NLog.Extensions.Logging" Version="6.1.1" />
 		<PackageReference Include="NLog.Web.AspNetCore" Version="6.1.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.12">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\MyApp.Shared\MyApp.Shared.csproj" />
-		<ProjectReference Include="..\MyApp.Application\MyApp.Application.csproj" />
+		<ProjectReference Include="..\MyApp.Presentation\MyApp.Presentation.csproj" />
 		<ProjectReference Include="..\MyApp.Infrastructure\MyApp.Infrastructure.csproj" />
-		<ProjectReference Include="..\MyApp.Domain\MyApp.Domain.csproj" />
 	</ItemGroup>
 </Project>
