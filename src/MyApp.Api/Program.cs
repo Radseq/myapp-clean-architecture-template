@@ -3,6 +3,8 @@ using MyApp.Infrastructure;
 using MyApp.Presentation.DependencyInjection;
 using MyApp.Presentation.Diagnostics;
 using NLog;
+using MyApp.Application;
+using MyApp.Presentation.Observability;
 
 var bootstrapLogger = MyAppLoggingExtensions.CreateBootstrapLogger("nlog.config");
 
@@ -16,6 +18,10 @@ try
 
     // Presentation: controllers + swagger + problem details + localization + http logging(dev)
     builder.Services.AddPresentation(builder.Configuration, builder.Environment);
+
+    builder.Services.AddMyAppObservability(builder.Configuration);
+
+    builder.Services.AddApplication();
 
     builder.Services.AddSingleton<ILoggingDiagnosticsProvider, NLogLoggingDiagnosticsProvider>();
 
