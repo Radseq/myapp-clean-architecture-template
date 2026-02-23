@@ -3,26 +3,38 @@
 public sealed class MessageResult<T> : MessageResult
 {
     private MessageResult(
-        MessageResultStatus status,
         T? value,
         IReadOnlyList<ErrorData>? errors = null,
-        IReadOnlyList<ErrorData>? warnings = null)
-        : base(status, errors, warnings)
+        IReadOnlyList<ErrorData>? warnings = null,
+        MessageResultDiagnostics diagnostics = default)
+        : base(errors, warnings, diagnostics)
     {
         Value = value;
     }
 
     public T? Value { get; }
 
+    public override MessageResult<T> WithDiagnostics(MessageResultDiagnostics diagnostics)
+        => new(Value, Errors, Warnings, diagnostics);
+
+    public override MessageResult<T> ForceBodyLogging()
+        => WithDiagnostics(Diagnostics with { BodyLogPolicy = BodyLogPolicy.Force });
+
+    public override MessageResult<T> SuppressBodyLogging()
+        => WithDiagnostics(Diagnostics with { BodyLogPolicy = BodyLogPolicy.Suppress });
+
     public static MessageResult<T> Ok(T value)
-        => new(MessageResultStatus.Success, value);
+        => new(value);
+
+    public static MessageResult<T> Ok(T value, params ErrorData[] warnings)
+        => new(value, errors: null, warnings: warnings ?? Array.Empty<ErrorData>());
 
     public static MessageResult<T> Partial(T value, params ErrorData[] warnings)
-        => new(MessageResultStatus.Partial, value, warnings: warnings ?? []);
+        => Ok(value, warnings);
 
     public static MessageResult<T> Fail(ErrorData error)
-        => new(MessageResultStatus.Failure, default, errors: [error]);
+        => new(default, errors: [error]);
 
     public static MessageResult<T> Fail(IEnumerable<ErrorData> errors)
-        => new(MessageResultStatus.Failure, default, errors: errors?.ToArray() ?? []);
+        => new(default, errors: errors?.ToArray() ?? Array.Empty<ErrorData>());
 }

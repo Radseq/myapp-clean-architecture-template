@@ -1,13 +1,5 @@
 ﻿namespace MyApp.Domain.Common;
 
-public enum MessageResultStatus
-{
-    Success = 0,
-    Partial = 1, // sukces + ostrzeżenia
-    Failure = 2
-}
-
-
 /*
 MessageResult u Ciebie to „kontrolowany wynik use-case’a”, który zastępuje wyjątki jako flow i daje spójny kontrakt błędów/ostrzeżeń między warstwami Application ↔ API (i ewentualnie między modułami), a dopiero na boundary HTTP jest mapowany na ApiResponse<T> albo ApiProblemDetails.
 
@@ -127,47 +119,111 @@ do modeli infrastruktury,
 jako “uniwersalny wrapper” wszędzie (np. repozytoria często lepiej zwracają null/bool/Entity? i to handler mapuje na MessageResult — zależy od stylu, ale ważna jest konsekwencja).
 */
 
+/// <summary>
+/// Uproszczony status wyniku (pochodny od Errors/Warn).
+/// </summary>
+public enum MessageResultStatus
+{
+    /// <summary>Brak błędów i brak ostrzeżeń.</summary>
+    Success = 0,
+
+    /// <summary>Brak błędów, ale są ostrzeżenia (success + warnings).</summary>
+    Partial = 1,
+
+    /// <summary>Są błędy.</summary>
+    Failure = 2
+}
+
+/// <summary>
+/// Diagnostyczny hint dla warstwy Presentation (middleware).
+/// To NIE jest HTTP ani domena — jedynie sygnał kontrolujący logowanie request/response body.
+/// </summary>
+public enum BodyLogPolicy
+{
+    /// <summary>Domyślna polityka (np. loguj body tylko dla 5xx).</summary>
+    Default = 0,
+
+    /// <summary>Wymuś logowanie body niezależnie od statusu HTTP (np. handler złapał wyjątek i zwrócił kontrolowany fail).</summary>
+    Force = 1,
+
+    /// <summary>Wyłącz logowanie body dla tego requestu.</summary>
+    Suppress = 2
+}
+
+/// <summary>
+/// Dodatkowe metadane wyniku (np. dla diagnostyki).
+/// </summary>
+public readonly record struct MessageResultDiagnostics(BodyLogPolicy BodyLogPolicy = BodyLogPolicy.Default);
+
 public class MessageResult
 {
     protected MessageResult(
-        MessageResultStatus status,
         IReadOnlyList<ErrorData>? errors = null,
-        IReadOnlyList<ErrorData>? warnings = null)
+        IReadOnlyList<ErrorData>? warnings = null,
+        MessageResultDiagnostics diagnostics = default)
     {
-        Status = status;
-        Errors = errors is null ? Array.Empty<ErrorData>() : errors.ToArray();
-        Warnings = warnings is null ? Array.Empty<ErrorData>() : warnings.ToArray();
+        Errors = Freeze(errors);
+        Warnings = Freeze(warnings);
+        Diagnostics = diagnostics;
     }
 
-    public MessageResultStatus Status { get; }
+    public MessageResultDiagnostics Diagnostics { get; }
 
-    public bool IsSuccess => Status is MessageResultStatus.Success or MessageResultStatus.Partial;
-    public bool IsPartial => Status == MessageResultStatus.Partial;
-    public bool HasFailed => Status == MessageResultStatus.Failure;
+    // Status NIE jest już ustawiany ręcznie – wynika z danych.
+    public MessageResultStatus Status =>
+        Errors.Count > 0 ? MessageResultStatus.Failure :
+        Warnings.Count > 0 ? MessageResultStatus.Partial :
+        MessageResultStatus.Success;
+
+    public bool IsSuccess => Errors.Count == 0;
+    public bool IsPartial => Errors.Count == 0 && Warnings.Count > 0;
+    public bool HasFailed => Errors.Count > 0;
 
     public IReadOnlyList<ErrorData> Errors { get; }
     public IReadOnlyList<ErrorData> Warnings { get; }
 
     public ErrorData? PrimaryError => Errors.Count > 0 ? Errors[0] : null;
 
-    public static MessageResult Ok() => new(MessageResultStatus.Success);
+    public virtual MessageResult WithDiagnostics(MessageResultDiagnostics diagnostics)
+        => new(Errors, Warnings, diagnostics);
 
+    public virtual MessageResult ForceBodyLogging()
+        => WithDiagnostics(Diagnostics with { BodyLogPolicy = BodyLogPolicy.Force });
+
+    public virtual MessageResult SuppressBodyLogging()
+        => WithDiagnostics(Diagnostics with { BodyLogPolicy = BodyLogPolicy.Suppress });
+
+    public static MessageResult Ok() => new();
+
+    public static MessageResult Ok(params ErrorData[] warnings)
+        => new(errors: null, warnings: warnings ?? Array.Empty<ErrorData>());
+
+    // kompatybilność – dawniej Partial(...) tworzył status Partial,
+    // teraz Partial wynika z warnings.
     public static MessageResult Partial(params ErrorData[] warnings)
-        => new(MessageResultStatus.Partial, warnings: warnings ?? Array.Empty<ErrorData>());
+        => Ok(warnings);
 
     public static MessageResult Fail(ErrorData error)
-        => new(MessageResultStatus.Failure, errors: new[] { error });
+        => new(errors: [error]);
 
     public static MessageResult Fail(IEnumerable<ErrorData> errors)
-        => new(MessageResultStatus.Failure, errors: errors?.ToArray() ?? Array.Empty<ErrorData>());
+        => new(errors: errors?.ToArray() ?? Array.Empty<ErrorData>());
 
     //// --- helpery dla MediatR pipeline / spójnego API ---
     public static MessageResult<T> Ok<T>(T value) => MessageResult<T>.Ok(value);
 
+    public static MessageResult<T> Ok<T>(T value, params ErrorData[] warnings)
+        => MessageResult<T>.Ok(value, warnings);
+
     public static MessageResult<T> Partial<T>(T value, params ErrorData[] warnings)
-        => MessageResult<T>.Partial(value, warnings);
+        => MessageResult<T>.Ok(value, warnings);
 
     public static MessageResult<T> Fail<T>(ErrorData error) => MessageResult<T>.Fail(error);
 
     public static MessageResult<T> Fail<T>(IEnumerable<ErrorData> errors) => MessageResult<T>.Fail(errors);
+
+    private static IReadOnlyList<ErrorData> Freeze(IReadOnlyList<ErrorData>? src)
+        => src is null || src.Count == 0
+            ? Array.Empty<ErrorData>()
+            : src is ErrorData[] a ? a : src.ToArray();
 }

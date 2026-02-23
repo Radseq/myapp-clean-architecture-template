@@ -27,36 +27,6 @@ public static class PresentationServiceCollectionExtensions
         services.AddSingleton<IApiErrorHttpStatusMapper, DefaultApiErrorHttpStatusMapper>();
         services.AddSingleton<IApiProblemDetailsFactory, ApiProblemDetailsFactory>();
 
-        services.Configure<ApiErrorHttpStatusOptions>(opt =>
-        {
-            // Validation
-            opt.CodeToStatus[1000] = StatusCodes.Status400BadRequest;
-            opt.CodeToStatus[1001] = StatusCodes.Status400BadRequest;
-
-            // NotFound
-            opt.CodeToStatus[2001] = StatusCodes.Status404NotFound;
-            opt.CodeToStatus[2101] = StatusCodes.Status404NotFound;
-
-            // Business
-            opt.CodeToStatus[2002] = StatusCodes.Status400BadRequest;
-
-            // db
-            opt.CodeToStatus[3001] = StatusCodes.Status409Conflict;
-            opt.CodeToStatus[3002] = StatusCodes.Status500InternalServerError;
-            opt.CodeToStatus[3003] = StatusCodes.Status500InternalServerError;
-            opt.CodeToStatus[3004] = StatusCodes.Status409Conflict;
-            opt.CodeToStatus[3005] = StatusCodes.Status409Conflict;
-            opt.CodeToStatus[3006] = StatusCodes.Status500InternalServerError;
-
-            // Transport
-            opt.CodeToStatus[4001] = StatusCodes.Status502BadGateway;
-            opt.CodeToStatus[4002] = StatusCodes.Status504GatewayTimeout;
-            opt.CodeToStatus[4003] = StatusCodes.Status502BadGateway;
-
-            // Common unexpected
-            opt.CodeToStatus[5000] = StatusCodes.Status500InternalServerError;
-        });
-
         services.AddAutoMapper(typeof(OrdersApiMappingProfile).Assembly);
 
         services.AddLocalization(o => o.ResourcesPath = "Resources");
