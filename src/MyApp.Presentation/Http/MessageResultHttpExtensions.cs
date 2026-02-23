@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyApp.Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
+using MyApp.Domain.Common;
 using MyApp.Presentation.ErrorHandling;
+using MyApp.Presentation.Observability.Middleware;
 
 namespace MyApp.Presentation.Http;
 
@@ -10,6 +12,8 @@ public static class MessageResultHttpExtensions
 {
     public static IActionResult ToActionResult(this ControllerBase c, MessageResult r)
     {
+        ApplyDiagnostics(c.HttpContext, r);
+
         if (r.HasFailed)
             return c.ToProblemDetails(r);
 
@@ -21,6 +25,8 @@ public static class MessageResultHttpExtensions
 
     public static IActionResult ToActionResult<T>(this ControllerBase c, MessageResult<T> r)
     {
+        ApplyDiagnostics(c.HttpContext, r);
+
         if (r.HasFailed)
             return c.ToProblemDetails(r);
 
@@ -36,18 +42,21 @@ public static class MessageResultHttpExtensions
         string actionName,
         object? routeValues)
     {
+        ApplyDiagnostics(c.HttpContext, r);
+
         if (r.HasFailed)
             return c.ToProblemDetails(r);
 
         var localizer = c.HttpContext.RequestServices.GetRequiredService<IApiErrorLocalizer>();
         var warnings = localizer.Localize(r.Warnings);
 
-        // nadal 201 – zasób powstał; ostrzeżenia mówią “co dalej nie wyszło”
         return c.CreatedAtAction(actionName, routeValues, new ApiResponse<T>(r.Value, warnings));
     }
 
     public static ObjectResult ToProblemDetails(this ControllerBase c, MessageResult r, int? statusOverride = null)
     {
+        ApplyDiagnostics(c.HttpContext, r);
+
         var factory = c.HttpContext.RequestServices.GetRequiredService<IApiProblemDetailsFactory>();
         var pd = factory.CreateForFailure(c.HttpContext, r, statusOverride);
 
@@ -73,14 +82,16 @@ public static class MessageResultHttpExtensions
     {
         var result = await mediator.Send(request, ct);
 
+        ApplyDiagnostics(controller.HttpContext, result);
+
         if (result.HasFailed)
             return controller.ToProblemDetails(result);
 
-        // Partial => 200 + warnings (dokładnie pod Twój case)
-        if (result.IsPartial && result.Warnings.Count > 0)
+        // Jeśli są warnings -> 200 + ApiResponse(null, warnings)
+        if (result.Warnings.Count > 0)
             return controller.ToActionResult(result);
 
-        return controller.NoContent(); // 204 tylko dla “czystego” Success
+        return controller.NoContent();
     }
 
     public static async Task<IActionResult> SendCreatedAtAction<TIn, TDto>(
@@ -94,6 +105,8 @@ public static class MessageResultHttpExtensions
     {
         var result = await mediator.Send(request, ct);
 
+        ApplyDiagnostics(controller.HttpContext, result);
+
         if (result.HasFailed)
             return controller.ToProblemDetails(result);
 
@@ -104,5 +117,10 @@ public static class MessageResultHttpExtensions
             getByIdActionName,
             routeValuesFactory(mapped.Value!)
         );
+    }
+
+    private static void ApplyDiagnostics(HttpContext ctx, MessageResult r)
+    {
+        BodyLogPolicyHttpContext.Set(ctx, r.Diagnostics.BodyLogPolicy);
     }
 }

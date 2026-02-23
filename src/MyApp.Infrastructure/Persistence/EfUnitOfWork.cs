@@ -85,7 +85,7 @@ public sealed class EfUnitOfWork(AppDbContext db, ILogger<EfUnitOfWork> logger)
                 "Unexpected exception during SaveChanges. Provider={Provider} Depth={Depth} InScope={InScope}",
                 db.Database.ProviderName, _depth, IsInScope());
 
-            return MessageResult<int>.Fail(Errors.Db.Unexpected);
+            return MessageResult<int>.Fail(Errors.Db.Unexpected).ForceBodyLogging();
         }
 
         ExecuteAndClearPostSaveActionsOrThrow();
@@ -131,7 +131,7 @@ public sealed class EfUnitOfWork(AppDbContext db, ILogger<EfUnitOfWork> logger)
                     "Failed to begin EF transaction. Provider={Provider}",
                     db.Database.ProviderName);
 
-                return MessageResult<IUnitOfWorkTransaction>.Fail(Errors.Db.Unexpected);
+                return MessageResult<IUnitOfWorkTransaction>.Fail(Errors.Db.Unexpected).ForceBodyLogging();
             }
         }
 
@@ -367,7 +367,7 @@ public sealed class EfUnitOfWork(AppDbContext db, ILogger<EfUnitOfWork> logger)
 
             await TryRollbackNoThrowAsync(ct);
             MarkRollbackRequestedAndClearActions();
-            return MessageResult.Fail(Errors.Db.Unexpected);
+            return MessageResult.Fail(Errors.Db.Unexpected).ForceBodyLogging();
         }
         finally
         {
@@ -418,7 +418,7 @@ public sealed class EfUnitOfWork(AppDbContext db, ILogger<EfUnitOfWork> logger)
         catch (Exception ex)
         {
             logger.LogError(ex, "Rollback failed. Provider={Provider}", db.Database.ProviderName);
-            return MessageResult.Fail(Errors.Db.Unexpected);
+            return MessageResult.Fail(Errors.Db.Unexpected).ForceBodyLogging();
         }
         finally
         {

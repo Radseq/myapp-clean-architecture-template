@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MyApp.Domain.Common;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
+using MyApp.Domain.Common;
 using MyApp.Presentation.Observability.Middleware;
+using System.Diagnostics;
 
 namespace MyApp.Presentation.ErrorHandling;
 
@@ -24,11 +24,7 @@ public sealed class ApiProblemDetailsFactory(
                      ?? errors.FirstOrDefault()?.Key
                      ?? "errors.unknown";
 
-        var isValidation = errors.Any(e =>
-            !string.IsNullOrWhiteSpace(e.Key) &&
-            e.Key.Contains("validation", StringComparison.OrdinalIgnoreCase));
-
-        var title = isValidation ? "Validation failed" : "Request failed";
+        var title = PickTitle(errors);
 
         var pd = new ProblemDetails
         {
@@ -53,13 +49,11 @@ public sealed class ApiProblemDetailsFactory(
 
     public ProblemDetails CreateForException(HttpContext ctx, Exception ex)
     {
-        // “nieprzewidziany wyjątek” traktujemy jak kontrolowany błąd na boundary
         var mr = MessageResult.Fail(Application.Common.Errors.Common.Unexpected);
 
         var pd = CreateForFailure(ctx, mr, statusOverride: StatusCodes.Status500InternalServerError);
         pd.Title = "Unhandled exception";
 
-        // Bezpieczny debug (tylko DEV)
         if (env.IsDevelopment())
         {
             pd.Extensions["exception"] = new
@@ -70,5 +64,22 @@ public sealed class ApiProblemDetailsFactory(
         }
 
         return pd;
+    }
+
+    private static string PickTitle(IReadOnlyList<ErrorData> errors)
+    {
+        var kind = errors.Count > 0 ? errors[0].Kind : ErrorKind.Unexpected;
+
+        return kind switch
+        {
+            ErrorKind.Validation => "Validation failed",
+            ErrorKind.NotFound => "Not found",
+            ErrorKind.Conflict => "Conflict",
+            ErrorKind.Unauthorized => "Unauthorized",
+            ErrorKind.Forbidden => "Forbidden",
+            ErrorKind.DependencyFailure => "Upstream dependency failed",
+            ErrorKind.DependencyTimeout => "Upstream dependency timeout",
+            _ => "Request failed"
+        };
     }
 }

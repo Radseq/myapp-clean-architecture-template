@@ -1,4 +1,6 @@
-﻿namespace MyApp.Domain.Common;
+﻿using System.Text.Json.Serialization;
+
+namespace MyApp.Domain.Common;
 
 /// <summary>
 /// Transportowalny błąd/ostrzeżenie.
@@ -13,6 +15,9 @@ public sealed record ErrorData
     public object?[] Args { get; init; } = [];
     public IReadOnlyList<ErrorData> ExtendedErrors { get; init; } = [];
 
+    [JsonIgnore]
+    public ErrorKind Kind { get; init; } = ErrorKind.Unknown;
+
     public ErrorData() { } // dla serializacji
 
     public ErrorData(
@@ -20,14 +25,19 @@ public sealed record ErrorData
         string key,
         string? description = null,
         object?[]? args = null,
-        IReadOnlyList<ErrorData>? extendedErrors = null)
+        IReadOnlyList<ErrorData>? extendedErrors = null,
+        ErrorKind kind = ErrorKind.Unknown)
     {
         Code = code;
         Key = key;
         Description = description;
         Args = args ?? Array.Empty<object?>();
         ExtendedErrors = extendedErrors ?? Array.Empty<ErrorData>();
+        Kind = kind;
     }
+
+    public ErrorData WithKind(ErrorKind kind)
+        => this with { Kind = kind };
 
     public ErrorData WithArgs(params object?[] args)
         => this with { Args = args ?? Array.Empty<object?>() };

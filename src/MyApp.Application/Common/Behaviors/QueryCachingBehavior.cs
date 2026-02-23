@@ -90,6 +90,7 @@ public sealed class QueryCachingBehavior<TRequest, TResponse>(
 
     private static bool IsNotFound(ErrorData? e)
         => e is not null
-           && !string.IsNullOrWhiteSpace(e.Key)
-           && e.Key.EndsWith(".not_found", StringComparison.OrdinalIgnoreCase);
+           && (e.Kind == ErrorKind.NotFound ||
+               (!string.IsNullOrWhiteSpace(e.Key) &&
+                e.Key.EndsWith(".not_found", StringComparison.OrdinalIgnoreCase)));
 }
