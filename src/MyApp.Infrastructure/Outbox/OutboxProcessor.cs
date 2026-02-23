@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyApp.Application.Abstractions.Observability;
 using MyApp.Application.Abstractions.Outbox;
-using MyApp.Infrastructure.Persistence.DbFirst;
-using MyApp.Infrastructure.Persistence.DbFirst.Entities;
-using MyApp.Infrastructure.Persistence.DbFirst.Enums;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Enums;
 
 namespace MyApp.Infrastructure.Outbox;
 
@@ -16,7 +17,8 @@ public sealed class OutboxProcessor(
     IEnumerable<IOutboxMessageHandler> handlers,
     IOptions<OutboxOptions> options,
     TimeProvider timeProvider,
-    ILogger<OutboxProcessor> logger)
+    ILogger<OutboxProcessor> logger,
+    ICorrelationContext correlation)
 {
     private readonly OutboxOptions _opt = options.Value;
     private readonly Dictionary<string, IOutboxMessageHandler> _map = handlers
@@ -40,33 +42,53 @@ public sealed class OutboxProcessor(
         {
             ct.ThrowIfCancellationRequested();
 
-            var envelope = new OutboxEnvelope(msg.Id, msg.Type, msg.PayloadJson, msg.IdempotencyKey, msg.AttemptCount);
+            var cid = !string.IsNullOrWhiteSpace(msg.CorrelationId)
+                ? msg.CorrelationId
+                : msg.Id.ToString("N");
 
-            OutboxDispatchResult result;
-            if (!_map.TryGetValue(msg.Type, out var handler))
-            {
-                result = OutboxDispatchResult.Dead($"No outbox handler registered for type '{msg.Type}'.");
-            }
-            else
-            {
-                try
-                {
-                    result = await handler.DispatchAsync(envelope, ct);
-                }
-                catch (OperationCanceledException) when (ct.IsCancellationRequested)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    // exception = traktuj jako retry (sieć/5xx/timeouts itp.)
-                    logger.LogError(ex, "Outbox dispatch exception. Id={Id} Type={Type}", msg.Id, msg.Type);
-                    result = OutboxDispatchResult.Retry(ex.Message);
-                }
-            }
+            correlation.CorrelationId = cid;
 
-            await ApplyResultAsync(msg.Id, lockId, result, ct);
-            processed++;
+            using var scope = logger.BeginScope(new Dictionary<string, object?>
+            {
+                ["correlationId"] = cid,
+                ["outboxId"] = msg.Id,
+                ["outboxType"] = msg.Type,
+                ["attempt"] = msg.AttemptCount
+            });
+
+            try
+            {
+                var envelope = new OutboxEnvelope(msg.Id, msg.Type, msg.PayloadJson, msg.IdempotencyKey, msg.AttemptCount);
+
+                OutboxDispatchResult result;
+                if (!_map.TryGetValue(msg.Type, out var handler))
+                {
+                    result = OutboxDispatchResult.Dead($"No outbox handler registered for type '{msg.Type}'.");
+                }
+                else
+                {
+                    try
+                    {
+                        result = await handler.DispatchAsync(envelope, ct);
+                    }
+                    catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Outbox dispatch exception. Id={Id} Type={Type}", msg.Id, msg.Type);
+                        result = OutboxDispatchResult.Retry(ex.Message);
+                    }
+                }
+
+                await ApplyResultAsync(msg.Id, lockId, result, ct);
+                processed++;
+            }
+            finally
+            {
+                correlation.CorrelationId = null; // <-- MUST HAVE
+            }
         }
 
         return processed;

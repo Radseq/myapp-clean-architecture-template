@@ -2,7 +2,8 @@
 using MyApp.Application.Abstractions.Persistence;
 using MyApp.Domain.Common;
 using MyApp.Domain.Orders;
-using MyApp.Infrastructure.Persistence.DbFirst;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst;
+
 
 namespace MyApp.Infrastructure.Persistence.Repositories;
 
@@ -52,14 +53,14 @@ public sealed class OrderDomainRepository(AppDbContext db,
         return rehydrated.IsSuccess ? rehydrated.Value : null;
     }
 
-    private static DbFirst.Entities.Order MapToEf(Order order)
+    private static MicrosoftSqlServer.DbFirst.Entities.Order MapToEf(Order order)
         => new()
         {
             CustomerId = order.CustomerId,
             OrderDateUtc = order.OrderDateUtc,
             Status = order.Status.ToString(),
             TotalAmount = order.TotalAmount,
-            OrderItems = order.Items.Select(i => new DbFirst.Entities.OrderItem
+            OrderItems = order.Items.Select(i => new MicrosoftSqlServer.DbFirst.Entities.OrderItem
             {
                 ProductId = i.ProductId,
                 UnitPrice = i.UnitPrice,

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MyApp.Application.Orders.Dtos;
-using MyApp.Infrastructure.Persistence.DbFirst.Entities;
+using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities;
 
 namespace MyApp.Infrastructure.Mapping;
 
