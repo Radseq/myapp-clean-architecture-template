@@ -33,31 +33,31 @@ public static class PresentationServiceCollectionExtensions
 
         services.AddSwaggerWithVersioning();
 
-        if (env.IsDevelopment())
-        {
-            services.AddHttpLogging(o =>
-            {
-                o.CombineLogs = true;
-                o.LoggingFields =
-                    HttpLoggingFields.RequestMethod |
-                    HttpLoggingFields.RequestPath |
-                    HttpLoggingFields.RequestQuery |
-                    HttpLoggingFields.RequestHeaders |
-                    HttpLoggingFields.RequestBody |
-                    HttpLoggingFields.ResponseStatusCode |
-                    HttpLoggingFields.ResponseBody;
+        //if (env.IsDevelopment())
+        //{
+        //    services.AddHttpLogging(o =>
+        //    {
+        //        o.CombineLogs = true;
+        //        o.LoggingFields =
+        //            HttpLoggingFields.RequestMethod |
+        //            HttpLoggingFields.RequestPath |
+        //            HttpLoggingFields.RequestQuery |
+        //            HttpLoggingFields.RequestHeaders |
+        //            HttpLoggingFields.RequestBody |
+        //            HttpLoggingFields.ResponseStatusCode |
+        //            HttpLoggingFields.ResponseBody;
 
-                o.RequestBodyLogLimit = 4096;
-                o.ResponseBodyLogLimit = 4096;
+        //        o.RequestBodyLogLimit = 4096;
+        //        o.ResponseBodyLogLimit = 4096;
 
-                o.MediaTypeOptions.AddText("application/json");
-                o.MediaTypeOptions.AddText("application/problem+json");
+        //        o.MediaTypeOptions.AddText("application/json");
+        //        o.MediaTypeOptions.AddText("application/problem+json");
 
-                o.RequestHeaders.Remove("Authorization");
-                o.RequestHeaders.Remove("Cookie");
-                o.ResponseHeaders.Remove("Set-Cookie");
-            });
-        }
+        //        o.RequestHeaders.Remove("Authorization");
+        //        o.RequestHeaders.Remove("Cookie");
+        //        o.ResponseHeaders.Remove("Set-Cookie");
+        //    });
+        //}
 
         return services;
     }

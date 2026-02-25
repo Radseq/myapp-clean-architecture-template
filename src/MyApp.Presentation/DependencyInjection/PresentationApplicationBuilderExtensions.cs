@@ -41,8 +41,8 @@ public static class PresentationApplicationBuilderExtensions
         // kolejność – correlation zawsze pierwszy
         app.UseMiddleware<CorrelationIdMiddleware>();
 
-        if (app.Environment.IsDevelopment())
-            app.UseHttpLogging();
+        //if (app.Environment.IsDevelopment())
+        //    app.UseHttpLogging();
 
         app.UseMiddleware<RequestLoggingMiddleware>();
         app.UseMiddleware<BodyOnErrorLoggingMiddleware>();
