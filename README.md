@@ -1,6 +1,6 @@
 # MyApp API
 
-> Production-ready ASP.NET Core API based on Clean Architecture, CQRS (MediatR), explicit result modeling (MessageResult), structured error contracts, and full observability (CorrelationId + ProblemDetails).
+> Production-ready ASP.NET Core API based on Clean Architecture, CQRS (MediatR), explicit result modeling (MessageResult), structured error contracts, and full observability (CorrelationId + ProblemDetails + request/body/exception logging).
 
 ---
 
@@ -8,7 +8,7 @@
 
 ## High-Level Architecture
 
-```
+```text
 Client
    │
    ▼
@@ -27,14 +27,12 @@ Client
 [ Database / External APIs ]
 ```
 
----
-
 ## Layers
 
 ### Domain
 - `MessageResult`
 - `MessageResult<T>`
-- `ErrorData`
+- `ErrorData`, `ErrorKind`
 - Domain Errors catalog (`Errors.*`)
 
 ### Application
@@ -42,154 +40,121 @@ Client
 - `ITransactionalCommand`
 - Handlers
 - FluentValidation validators
-- MediatR pipeline behaviors
+- MediatR pipeline behaviors (logging/validation/caching/uow)
 
 ### Infrastructure
-- `EfUnitOfWork`
+- `EfUnitOfWork` (transaction boundary + DB retry-friendly)
 - Repositories
 - AutoMapper profiles
-- DB exception mapping
-- Outbox (after create order periodic send request to http transport if failed)
-- Save to db request with results when app return error
-- Caching in memory (or redis) http get
+- DB exception mapping (unique/FK/concurrency/unexpected → `ErrorData`)
+- Outbox (reliable downstream dispatch)
+- Optional: Query cache backend (in-memory / Redis)
+- Optional: Failed HTTP payload store (Redis/SQL/None) with TTL (for support/debug)
 
-### API
-- Middlewares
-- HTTP result mapping (ApiResponse / ProblemDetails)
-- CorrelationId propagation
-- Versioning helpers
+### API (Presentation)
+- Middlewares (CorrelationId, request logging, body capture, global exception)
+- HTTP result mapping (`ApiResponse` / `ProblemDetails`)
+- CorrelationId propagation into outbound `HttpClient`
+- API versioning helpers
 
 ---
 
 # 2️⃣ Request Flow (Real Execution Order)
 
-## HTTP Pipeline Order
+## HTTP Pipeline Registration Order
+
+> Important: middleware order below is **registration order** (`app.Use...`).  
+> Request goes top→down. Response/exception unwinds bottom→up.
 
 1. `CorrelationIdMiddleware`
 2. `RequestLoggingMiddleware`
-3. `GlobalExceptionMiddleware`
-4. Controller
-5. MediatR.Send(...)
-6. Pipeline behaviors (in order registered)
+3. `BodyOnErrorLoggingMiddleware`
+4. `GlobalExceptionMiddleware`
+5. Controllers / minimal endpoints
 
----
+### Why this order?
+- `GlobalExceptionMiddleware` must be **inside** the pipeline so it can convert unhandled exceptions into `ProblemDetails`.
+- `BodyOnErrorLoggingMiddleware` must wrap *around* the exception handler to capture the response body produced by `GlobalExceptionMiddleware`.
+- `RequestLoggingMiddleware` stays early to log final status/latency for *every* request.
 
 ## MediatR Pipeline Order
 
-Recommended order:
+Recommended registration order (outer → inner):
 
-```
+```text
 RequestLoggingBehavior
 ↓
 ValidationBehavior
 ↓
-QueryCachingBehavior
+QueryCachingBehavior (queries only)
 ↓
-UnitOfWorkBehavior
+UnitOfWorkBehavior (commands only)
 ↓
 Handler
 ```
 
----
-
-## Detailed Flow Example (Command)
-
-```
-HTTP POST /orders
-  ↓
-CorrelationId assigned
-  ↓
-Controller → SendOk(...)
-  ↓
-RequestLoggingBehavior
-  ↓
-ValidationBehavior
-  → validation fail? → MessageResult.Fail(...)
-  ↓
-UnitOfWorkBehavior
-  → begin transaction? (if ITransactionalCommand)
-  ↓
-Handler
-  → returns MessageResult
-  ↓
-UnitOfWorkBehavior
-  → Success? SaveChanges
-  → Partial? SaveChanges
-  → Failure? rollback / skip SaveChanges
-  ↓
-HTTP Mapping
-  → Success → 200/201 ApiResponse
-  → Partial → 200 + warnings
-  → Failure → ProblemDetails
-```
+Notes:
+- `QueryCachingBehavior` should short-circuit before hitting DB for cache hits.
+- `UnitOfWorkBehavior` must run around command handlers to control transactions/SaveChanges.
+- Keep logging outermost so it measures whole application pipeline latency and captures result state.
 
 ---
 
 # 3️⃣ MessageResult Contract
 
 ## Why MessageResult Exists
-
 - No exceptions as business flow
 - Explicit Partial Success support
 - Predictable mapping to HTTP
 - Stable error structure for clients
 
----
-
 ## States
 
 ### Success
-```
+```csharp
 MessageResult.Ok()
+MessageResult.Ok(value)
 ```
 
 ### Partial
-```
+```csharp
 MessageResult.Partial(warnings)
+MessageResult.Partial(value, warnings)
 ```
-
-Used when:
+Use when:
 - DB commit succeeded
 - Downstream integration failed
 - Non-critical step failed
 
----
-
 ### Failure
-```
+```csharp
 MessageResult.Fail(errors)
+MessageResult<T>.Fail(errors)
 ```
-
-Used for:
+Use for:
 - Validation errors
 - Not found
 - Domain violations
 - DB constraint errors
+- Integration failures (when not partial)
 
 ---
 
 # 4️⃣ Error Contract
 
 ## ErrorData Structure
-
 - `Code` → stable numeric code
 - `Key` → localization key
 - `Args` → formatting parameters
 - `Description` → fallback text
 - `ExtendedErrors` → nested field errors
 
----
-
 ## Localization Resolution Order
-
 1. RESX by `Key`
 2. `Description`
 3. `Key`
 
----
-
 ## HTTP Status Mapping Rules
-
 Priority:
 1. Explicit mapping by `Code`
 2. Explicit mapping by `Key`
@@ -198,37 +163,31 @@ Priority:
 Examples:
 - `*.not_found` → 404
 - `*.validation*` → 400
-- `duplicate/foreign_key` → 409
-- `transport.api_failed` → 502
-- `unexpected` → 500
+- unique constraint / duplicate → 409
+- FK constraint → 409 / 400 (depending on API contract)
+- downstream transport failure → 502
+- unexpected → 500
 
 ---
 
 # 5️⃣ Unit of Work Behavior
 
 ## Core Principles
-
-- Handlers DO NOT call `SaveChanges`
-- Handlers DO NOT open transactions manually
+- Handlers **DO NOT** call `SaveChanges`
+- Handlers **DO NOT** open transactions manually
 - Retry logic must not be broken by manual transaction management
 
----
-
 ## EfUnitOfWork Features
-
 - Nested transaction scope
-- Rollback requested flag
-- Post-save action queue
+- Rollback-requested flag
+- Post-save action queue (run only after successful commit)
 - DB exception mapping:
   - Unique constraint
   - FK constraint
   - Concurrency conflict
   - Unexpected
 
----
-
 ## Golden Rule
-
 > Transaction boundary is controlled by pipeline, not handler.
 
 ---
@@ -236,77 +195,120 @@ Examples:
 # 6️⃣ Observability
 
 ## CorrelationId
-
 Header:
-```
+```text
 X-Correlation-ID
 ```
 
 Behavior:
-- If provided → propagated
+- If provided → propagated (sanitized, length-limited)
 - If missing → generated
-- Always returned in response
+- Always returned in response header
 
 Injected into:
-- Logger scope
-- Activity (OpenTelemetry ready)
-- Downstream HttpClient
+- Logger scope (`correlationId`, `traceId`, `spanId`, `requestId`)
+- `Activity` baggage/tags (OpenTelemetry ready)
+- Downstream `HttpClient` (delegating handler)
 
----
+## Log taxonomy (what logs what)
 
-## Middlewares
+### HTTP access / traffic summary — `RequestLoggingMiddleware` (EventId=1001)
+Logs (structured):
+- `Method`, `Path`, optional redacted `Query`
+- `StatusCode`
+- `ElapsedMs`
+- `Endpoint`
+- Optional redacted `Headers` (allow-list + deny-list + truncation)
 
-### CorrelationIdMiddleware
-- Adds correlation id
-- Adds logging scope
+Typical use:
+- Traffic monitoring
+- Slow requests detection
+- Routing to alerting based on status codes
 
-### RequestLoggingMiddleware
+### Application request outcome — `RequestLoggingBehavior`
 Logs:
-```
-{method} {path} => {status} in {ms}
-```
+- `RequestName`
+- `ElapsedMs` for application pipeline
+- Result state: OK / PARTIAL / FAILED (+ error codes/keys)
 
-### GlobalExceptionMiddleware
-- Converts unhandled exceptions to ProblemDetails
-- DEV mode includes extra exception info
-- `OperationCanceledException` → 499
+Typical use:
+- Which use-cases fail most often
+- Business-level SLOs
+
+### Payload capture — `BodyOnErrorLoggingMiddleware` (EventId=1003)
+
+Modes:
+- `Off`: disabled
+- `OnServerError`: captures when status >= 500 (unless forced)
+- `OnError`: captures when status >= 400 (unless forced)
+- `Always`: captures on every request (not recommended for prod)
+
+Policy (per request):
+- `Default`: follow `Mode`
+- `Force`: capture even for 2xx/3xx/4xx (explicit debugging)
+- `Suppress`: never capture
+
+Request body capture rules (to avoid heavy buffering):
+- Only for POST/PUT/PATCH
+- Only when `Content-Type` is in allow-list
+- Only when `Content-Length <= MaxRequestContentLengthToCapture`
+  (or `AllowUnknownContentLength=true` when Content-Length is missing)
+
+Safety:
+- `MaxBytes` hard cap + truncation for both request/response
+- Content-type allow-list (recommended)
+- JSON deny-path redaction (recommended)
+- Never blocks request: store failures are swallowed
+
+Store (support/debug, TTL):
+- `BodyLogging:Store:Mode = None | Redis | Sql`
+- If Mode != None, middleware persists `FailedHttpPayload` with TTL (`TtlMinutes`)
+- Middleware sets `HttpContext.Items["__BodyLogKey"] = <key>` so `ProblemDetails` (or logs) can reference it
+
+Production recommendation:
+- Prefer storing bodies in Redis/SQL with TTL
+- In normal log stream, log mainly `PayloadKey`, status, endpoint, and whether payload was truncated/size-limited
+  (full bodies only when explicitly needed / on forced debugging)
+Tip:
+- Keep body logging to minimum in prod; use PayloadKey + store lookup workflow for support.
+- Full bodies in logs are acceptable only in controlled environments (dev/staging) or temporary incident mode.
+
+### Unhandled exceptions — `GlobalExceptionMiddleware` (EventId=1002)
+- Converts exceptions to `ProblemDetails`
+- DEV may include extra details
+- `OperationCanceledException` (client aborted) → 499
 
 ---
 
 # 7️⃣ HTTP Response Contract
 
 ## Success
-
-```
+```http
 200 OK
+```
+```json
 {
-  "value": {...},
+  "value": { },
   "warnings": []
 }
 ```
 
----
-
 ## Partial Success
-
-```
+```http
 200 OK
+```
+```json
 {
-  "value": {...},
-  "warnings": [ ... ]
+  "value": { },
+  "warnings": [ ]
 }
 ```
 
----
-
 ## Failure
-
-```
+```http
 4xx / 5xx
-ProblemDetails
 ```
-
-Includes:
+`ProblemDetails` includes:
 - `errors`
 - `warnings` (if present)
 - `traceId`
@@ -317,10 +319,8 @@ Includes:
 # 8️⃣ Integration Patterns
 
 ## Pattern 1 — Sync Integration (Simple)
-
 Handler:
-
-```
+```text
 Save DB
 Call external API
 If API fails → Partial
@@ -329,13 +329,9 @@ If API fails → Partial
 Risk:
 - External API fails after DB commit
 
----
-
 ## Pattern 2 — Outbox (Recommended Production Pattern)
-
 Flow:
-
-```
+```text
 Handler:
   - Save Order
   - Save OutboxMessage
@@ -358,18 +354,16 @@ Advantages:
 
 # 9️⃣ Idempotency
 
-## For Create Operations
-
-Client sends:
-```
+For create operations client sends:
+```text
 Idempotency-Key: <GUID>
 ```
 
 Server:
-- Store key + result
-- If repeated → return stored result
+- Store key + result fingerprint (or full response)
+- On repeat → return stored response
 
-This prevents:
+Prevents:
 - Duplicate orders
 - Double dispatch
 
@@ -378,98 +372,85 @@ This prevents:
 # 🔟 Retry Strategy (HttpClient + Polly)
 
 Recommended policies:
-
-### Retry
-- Transient HTTP failures
-- Timeout
-- 5xx
-- 429
-
-### Circuit Breaker
-- Protect system during downstream outage
-
-### Timeout
-- Hard timeout per call
+- Retry: transient HTTP failures, timeouts, 5xx, 429
+- Circuit Breaker: protect system during downstream outage
+- Timeout: hard timeout per call
 
 ---
 
-# 1️⃣1️⃣ Caching (Optional Layer)
+# 1️⃣1️⃣ Caching (Optional)
 
 If enabled:
-
-```
+```text
 Caching:UseRedis = true
 ```
 
 Behavior:
-- Query-level caching
+- Query-level caching (queries only)
 - TTL per query
 - Optional CacheNotFound TTL
-- Global or scoped cache
+- Global or scoped cache backend
 
 ---
 
 # 1️⃣2️⃣ Production Readiness Checklist
 
 ## Mandatory
-
-- [x] CorrelationId
-- [x] Structured logging
-- [x] Localized errors
+- [x] CorrelationId end-to-end
+- [x] Structured logging (JSON)
+- [x] Localized errors (RESX + fallback)
 - [x] Stable error codes
 - [x] ProblemDetails compliance
 - [x] DB exception mapping
-- [x] Transaction boundary centralized
+- [x] Transaction boundary centralized (UoW behavior)
 - [x] Partial success support
 - [x] Outbox pattern for integrations
-- [x] Save request & result to redis/db table when respond error
----
 
 ## Recommended
-
 - [ ] Idempotency store
-- [ ] Polly retry/circuit breaker
+- [ ] Polly retry/circuit breaker/timeout
 - [ ] Rate limiting
 - [ ] Health checks
 - [ ] OpenTelemetry exporter
-- [ ] Structured log aggregation (ELK / Seq / Loki)
+- [ ] Central log aggregation (ELK / Seq / Loki)
 - [ ] Security hardening (headers, CORS, input limits)
+- [ ] Optional: Failed HTTP payload store with TTL (for support/debug)
+- [ ] Optional: Payload redaction (deny-paths) + content-type allow-list
 
 ---
 
 # 1️⃣3️⃣ Adding New Use Case
 
 ### Query
-```
+```csharp
 public sealed record GetOrderQuery(...) : IQuery<OrderDto>;
 ```
 
 ### Command
-```
+```csharp
 public sealed record CreateOrder(...) : ICommand<OrderDto>;
 ```
 
 If needs transaction:
-```
-: ITransactionalCommand<OrderDto>
+```csharp
+public sealed record CreateOrder(...) : ITransactionalCommand<OrderDto>;
 ```
 
 ### Add Validator
-```
-class CreateOrderValidator : AbstractValidator<CreateOrder>
+```csharp
+sealed class CreateOrderValidator : AbstractValidator<CreateOrder> { }
 ```
 
 ### Handler Returns
-```
-MessageResult.Ok(...)
-MessageResult.Fail(...)
-MessageResult.Partial(...)
+```csharp
+return MessageResult.Ok(...);
+return MessageResult.Fail(...);
+return MessageResult.Partial(...);
 ```
 
 ---
 
 # 1️⃣4️⃣ Architectural Principles Enforced
-
 - ❌ No exceptions as control flow
 - ❌ No SaveChanges in handlers
 - ❌ No manual transaction in handlers
@@ -479,10 +460,11 @@ MessageResult.Partial(...)
 - ✅ Observability-first design
 - ✅ Integration resilience ready
 
-
-Then adapt namespaces if needed.
+---
 
 ## Run
 1. Set connection string in `src/MyApp.Api/appsettings.json`
 2. `dotnet restore`
 3. `dotnet run --project src/MyApp.Api`
+
+> Then adapt namespaces if needed.

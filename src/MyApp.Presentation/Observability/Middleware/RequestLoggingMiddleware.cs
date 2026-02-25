@@ -11,6 +11,8 @@ namespace MyApp.Presentation.Observability.Middleware;
 public static class LogEvents
 {
     public static readonly EventId RequestFinished = new(1001, nameof(RequestFinished));
+    public static readonly EventId UnhandledException = new(1002, nameof(UnhandledException));
+    public static readonly EventId BodyCaptured = new(1003, nameof(BodyCaptured));
 }
 
 public sealed class RequestLoggingMiddleware

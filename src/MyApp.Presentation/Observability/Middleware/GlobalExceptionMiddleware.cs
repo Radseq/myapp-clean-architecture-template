@@ -22,23 +22,14 @@ public sealed class GlobalExceptionMiddleware(
         }
         catch (Exception ex)
         {
-            var correlationId =
-                CorrelationIdMiddleware.TryGet(ctx)
-                ?? ctx.Request.Headers[CorrelationIdMiddleware.HeaderName].FirstOrDefault();
-
-            var traceId = Activity.Current?.TraceId.ToString() ?? ctx.TraceIdentifier;
-
             var userId =
                ctx.User?.FindFirst("sub")?.Value
                ?? ctx.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             logger.LogError(
+                LogEvents.UnhandledException,
                 ex,
-                "Unhandled exception. {Method} {Path} CorrelationId={CorrelationId} TraceId={TraceId} UserId={UserId} RemoteIp={RemoteIp}",
-                ctx.Request.Method,
-                ctx.Request.Path.Value,
-                correlationId,
-                traceId,
+                "Unhandled exception. UserId={UserId} RemoteIp={RemoteIp}",
                 userId,
                 ctx.Connection.RemoteIpAddress?.ToString());
 
