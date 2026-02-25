@@ -107,8 +107,7 @@ public static class DependencyInjection
         }
         else if (string.Equals(bodyStoreMode, "Sql", StringComparison.OrdinalIgnoreCase))
         {
-            services.AddSingleton<IFailedHttpPayloadStore>(_ =>
-                new SqlFailedHttpPayloadStore(cfg.GetConnectionString("Default")!));
+            services.AddScoped<IFailedHttpPayloadStore, EfFailedHttpPayloadStore>);
         }
         else
         {

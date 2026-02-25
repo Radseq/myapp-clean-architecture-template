@@ -8,11 +8,13 @@ namespace MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst;
 public partial class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)
-    : base(options)
+        : base(options)
     {
     }
 
     public virtual DbSet<Customer> Customers { get; set; }
+
+    public virtual DbSet<FailedHttpPayload> FailedHttpPayloads { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
@@ -27,6 +29,24 @@ public partial class AppDbContext : DbContext
             entity.ToTable("Customer");
 
             entity.Property(e => e.Name).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<FailedHttpPayload>(entity =>
+        {
+            entity.ToTable("FailedHttpPayload");
+
+            entity.HasIndex(e => new { e.CorrelationId, e.CreatedAtUtc }, "IX_FailedHttpPayload_CorrelationId_CreatedAtUtc").IsDescending(false, true);
+
+            entity.Property(e => e.CorrelationId).HasMaxLength(64);
+            entity.Property(e => e.Method).HasMaxLength(16);
+            entity.Property(e => e.Path).HasMaxLength(512);
+            entity.Property(e => e.RemoteIp).HasMaxLength(64);
+            entity.Property(e => e.RequestContentType).HasMaxLength(128);
+            entity.Property(e => e.RequestId).HasMaxLength(64);
+            entity.Property(e => e.ResponseContentType).HasMaxLength(128);
+            entity.Property(e => e.SpanId).HasMaxLength(64);
+            entity.Property(e => e.TraceId).HasMaxLength(64);
+            entity.Property(e => e.UserId).HasMaxLength(128);
         });
 
         modelBuilder.Entity<Order>(entity =>

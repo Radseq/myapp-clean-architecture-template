@@ -262,8 +262,10 @@ Safety:
 
 Store (support/debug, TTL):
 - `BodyLogging:Store:Mode = None | Redis | Sql`
-- If Mode != None, middleware persists `FailedHttpPayload` with TTL (`TtlMinutes`)
-- Middleware sets `HttpContext.Items["__BodyLogKey"] = <key>` so `ProblemDetails` (or logs) can reference it
+- When `Mode != None`, the middleware persists `FailedHttpPayload` and sets `HttpContext.Items["__BodyLogKey"] = <key>` for later lookup by support/tools.
+- TTL:
+  - Redis: native TTL.
+  - SQL: retention cleanup is best-effort (e.g., periodic `ExecuteDelete` by `CreatedAtUtc`) or handled by a dedicated job/worker.
 
 Production recommendation:
 - Prefer storing bodies in Redis/SQL with TTL

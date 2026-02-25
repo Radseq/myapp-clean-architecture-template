@@ -1,6 +1,6 @@
 USE [MyApp]
 GO
-/****** Object:  Table [dbo].[Customer]    Script Date: 2/18/2026 8:22:26 AM ******/
+/****** Object:  Table [dbo].[Customer]    Script Date: 2/25/2026 11:04:06 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -14,7 +14,7 @@ CREATE TABLE [dbo].[Customer](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[FailedHttpPayload]    Script Date: 2/18/2026 8:22:26 AM ******/
+/****** Object:  Table [dbo].[FailedHttpPayload]    Script Date: 2/25/2026 11:04:06 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -42,7 +42,7 @@ CREATE TABLE [dbo].[FailedHttpPayload](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Order]    Script Date: 2/18/2026 8:22:26 AM ******/
+/****** Object:  Table [dbo].[Order]    Script Date: 2/25/2026 11:04:06 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -59,7 +59,7 @@ CREATE TABLE [dbo].[Order](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderItem]    Script Date: 2/18/2026 8:22:26 AM ******/
+/****** Object:  Table [dbo].[OrderItem]    Script Date: 2/25/2026 11:04:06 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -76,7 +76,7 @@ CREATE TABLE [dbo].[OrderItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OutboxMessages]    Script Date: 2/18/2026 8:22:26 AM ******/
+/****** Object:  Table [dbo].[OutboxMessages]    Script Date: 2/25/2026 11:04:06 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -95,6 +95,7 @@ CREATE TABLE [dbo].[OutboxMessages](
 	[CreatedUtc] [datetime2](7) NOT NULL,
 	[ProcessedUtc] [datetime2](7) NULL,
 	[RowVersion] [timestamp] NOT NULL,
+	[CorrelationId] [nvarchar](128) NOT NULL,
  CONSTRAINT [PK_OutboxMessages] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -133,6 +134,7 @@ GO
 
 
 
+
 dotnet ef dbcontext scaffold ^
 "Data Source=JNTRD003\SQLEXPRESS;Initial Catalog=MyApp;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=30;" ^
 Microsoft.EntityFrameworkCore.SqlServer ^
@@ -141,56 +143,9 @@ Microsoft.EntityFrameworkCore.SqlServer ^
 --output-dir Persistence/MicrosoftSqlServer/DbFirst/Entities ^
 --namespace MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities ^
 --context-namespace MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst ^
---table Customer --table Order --table OrderItem --table OutboxMessages ^
+--table Customer --table Order --table OrderItem --table OutboxMessages --table FailedHttpPayload ^
 --use-database-names ^
 --no-onconfiguring ^
 --force
 
-Scaffold-DbContext 'Server=JNTRD003\SQLEXPRESS;Database=MyApp;Trusted_Connection=True;TrustServerCertificate=True;Connection Timeout=30;' Microsoft.EntityFrameworkCore.SqlServer -Context AppDbContext -ContextDir 'Persistence/MicrosoftSqlServer/DbFirst' -OutputDir 'Persistence/MicrosoftSqlServer/DbFirst/Entities' -Namespace 'MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities' -ContextNamespace 'MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst' -Tables 'Customer','dbo.Order','OrderItem','OutboxMessages' -UseDatabaseNames -NoOnConfiguring -Force
-
-
-
-Application
-  DistributionCenters
-    Create
-      Command.cs
-      Handler.cs
-      Validator.cs
-      Mapping.cs (optional)
-    Edit
-      Command.cs
-      Handler.cs
-      Validator.cs
-    Delete
-      Command.cs
-      Handler.cs
-    GetById
-      Query.cs
-      Handler.cs
-      Dto.cs
-    GetAllPaginated
-      Query.cs
-      Handler.cs
-      Dto.cs
-
-
-
-ALBO
-
-
-
-DistributionCenters
-  Commands
-    CreateDistributionCenter
-      Command.cs
-      Handler.cs
-      Validator.cs
-    EditDistributionCenter
-      Command.cs
-      Handler.cs
-  Queries
-    GetDistributionCenterById
-      Query.cs
-      Handler.cs
-      Dto.cs
-
+Scaffold-DbContext 'Server=JNTRD003\SQLEXPRESS;Database=MyApp;Trusted_Connection=True;TrustServerCertificate=True;Connection Timeout=30;' Microsoft.EntityFrameworkCore.SqlServer -Context AppDbContext -ContextDir 'Persistence/MicrosoftSqlServer/DbFirst' -OutputDir 'Persistence/MicrosoftSqlServer/DbFirst/Entities' -Namespace 'MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities' -ContextNamespace 'MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst' -Tables 'Customer','dbo.Order','OrderItem','OutboxMessages','FailedHttpPayload' -UseDatabaseNames -NoOnConfiguring -Force
