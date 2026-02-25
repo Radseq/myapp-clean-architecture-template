@@ -1,10 +1,9 @@
 using MyApp.Application.Common.Caching;
 using MyApp.Application.Common.Messaging;
-using MyApp.Application.Orders.Dtos;
 
-namespace MyApp.Application.Orders.Queries.GetOrderById;
+namespace MyApp.Application.Orders.GetOrderById;
 
-public sealed record GetOrderByIdQuery(int Id)
+public sealed record Query(int Id)
     : ICacheableQuery<OrderDto>
 {
     public string CacheKey => $"orders:id:{Id}";

@@ -1,18 +1,19 @@
 using MediatR;
 using MyApp.Application.Abstractions.Persistence;
 using MyApp.Application.Common;
+using MyApp.Application.Orders.CreateOrderAndDispatchTransport;
 using MyApp.Domain.Common;
 using MyApp.Domain.Orders;
 
-namespace MyApp.Application.Orders.Commands.CreateOrder;
+namespace MyApp.Application.Orders.CreateOrder;
 
-public sealed class CreateOrderHandler(
+public sealed class Handler(
     ICustomerReadRepository customers,
     IOrderDomainRepository orders)
-        : IRequestHandler<CreateOrderCommand, MessageResult>
+        : IRequestHandler<Command, MessageResult>
 {
     public async Task<MessageResult> Handle(
-        CreateOrderCommand request, CancellationToken cancellationToken)
+        Command request, CancellationToken cancellationToken)
     {
         if (request.Items is null || request.Items.Count == 0)
             return MessageResult<CreateOrderAndDispatchTransportResponse>.Fail(Errors.Orders.EmptyItems);
@@ -46,6 +47,6 @@ public sealed class CreateOrderHandler(
             return MessageResult<CreateOrderAndDispatchTransportResponse>.Fail(saved.Errors);
         }
 
-        return MessageResult<CreateOrderAndDispatchTransportResponse>.Ok();
+        return MessageResult.Ok();
     }
 }

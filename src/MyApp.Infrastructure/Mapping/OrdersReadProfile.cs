@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using MyApp.Application.Orders.Dtos;
+using MyApp.Application.Orders.GetOrderById;
 using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities;
 
 namespace MyApp.Infrastructure.Mapping;

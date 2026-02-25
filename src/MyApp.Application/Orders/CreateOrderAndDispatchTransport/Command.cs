@@ -1,8 +1,8 @@
 using MyApp.Application.Common.Messaging;
 
-namespace MyApp.Application.Orders.Commands.CreateOrder;
+namespace MyApp.Application.Orders.CreateOrderAndDispatchTransport;
 
-public sealed record CreateOrderAndDispatchTransportCommand(
+public sealed record Command(
 	int CustomerId,
 	DateTime? OrderDateUtc,
 	List<CreateOrderItemRequest> Items

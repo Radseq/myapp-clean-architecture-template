@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using MyApp.Application.Orders.Commands.CreateOrder;
-using MyApp.Application.Orders.Dtos;
+using MyApp.Application.Orders.CreateOrder;
+using MyApp.Application.Orders.CreateOrderAndDispatchTransport;
+using MyApp.Application.Orders.GetOrderById;
 using MyApp.Contracts;
 
 namespace MyApp.Presentation.Mappings;
@@ -8,9 +9,9 @@ public sealed class OrdersApiMappingProfile : Profile
 {
 	public OrdersApiMappingProfile()
 	{
-		CreateMap<CreateOrderAndDispatchTransportRequestDto, CreateOrderAndDispatchTransportCommand>()
+        CreateMap<CreateOrderAndDispatchTransportRequestDto, Application.Orders.CreateOrderAndDispatchTransport.Command>()
 			// OrderDateUtc: DTO może być DateTimeOffset? -> command DateTime?
-			.ForCtorParam(nameof(CreateOrderAndDispatchTransportCommand.OrderDateUtc),
+			.ForCtorParam(nameof(Application.Orders.CreateOrderAndDispatchTransport.Command.OrderDateUtc),
 				opt => opt.MapFrom(src => src.OrderDateUtc.HasValue
 					? src.OrderDateUtc.Value.UtcDateTime
 					: (DateTime?)null));
@@ -26,9 +27,9 @@ public sealed class OrdersApiMappingProfile : Profile
 			.ForCtorParam(nameof(OrderResponseModel.Items),
 				opt => opt.MapFrom(s => s.Items));
 
-        CreateMap<CreateOrderAndDispatchTransportRequestDto, CreateOrderCommand>()
+        CreateMap<CreateOrderAndDispatchTransportRequestDto, Application.Orders.CreateOrder.Command>()
 		// OrderDateUtc: DTO może być DateTimeOffset? -> command DateTime?
-		.ForCtorParam(nameof(CreateOrderCommand.OrderDateUtc),
+		.ForCtorParam(nameof(Application.Orders.CreateOrder.Command.OrderDateUtc),
 			opt => opt.MapFrom(src => src.OrderDateUtc.HasValue
 				? src.OrderDateUtc.Value.UtcDateTime
 				: (DateTime?)null));

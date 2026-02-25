@@ -1,4 +1,4 @@
-﻿using MyApp.Application.Orders.Dtos;
+﻿using MyApp.Application.Orders.GetOrderById;
 
 namespace MyApp.Application.Abstractions.Persistence;
 

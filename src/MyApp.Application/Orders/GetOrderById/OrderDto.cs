@@ -1,4 +1,4 @@
-namespace MyApp.Application.Orders.Dtos;
+namespace MyApp.Application.Orders.GetOrderById;
 
 public sealed record OrderDto(
     int Id,

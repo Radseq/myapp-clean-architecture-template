@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace MyApp.Application.Orders.Commands.CreateOrder;
+namespace MyApp.Application.Orders.CreateOrder;
 
-public sealed class CreateOrderValidator : AbstractValidator<CreateOrderCommand>
+public sealed class Validator : AbstractValidator<Command>
 {
-    public CreateOrderValidator()
+    public Validator()
     {
         RuleFor(x => x.CustomerId).GreaterThan(0);
 

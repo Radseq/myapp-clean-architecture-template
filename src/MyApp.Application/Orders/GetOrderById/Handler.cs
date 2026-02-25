@@ -1,16 +1,15 @@
 ﻿using MediatR;
 using MyApp.Application.Abstractions.Persistence;
 using MyApp.Application.Common;
-using MyApp.Application.Orders.Dtos;
 using MyApp.Domain.Common;
 
-namespace MyApp.Application.Orders.Queries.GetOrderById;
+namespace MyApp.Application.Orders.GetOrderById;
 
-public sealed class GetOrderByIdHandler(IOrderDomainRepository ordersDomian,
+public sealed class Handler(IOrderDomainRepository ordersDomian,
 	IOrderReadRepository ordersDto) : 
-	IRequestHandler<GetOrderByIdQuery, MessageResult<OrderDto>>
+	IRequestHandler<Query, MessageResult<OrderDto>>
 {
-	public async Task<MessageResult<OrderDto>> Handle(GetOrderByIdQuery request, CancellationToken ct)
+	public async Task<MessageResult<OrderDto>> Handle(Query request, CancellationToken ct)
 	{
 		// wersja 1, Persistence zwaca order z domian 
 		// najlepsza bo pomimo tego że są zweryfikowane przez domian dane na bazie,

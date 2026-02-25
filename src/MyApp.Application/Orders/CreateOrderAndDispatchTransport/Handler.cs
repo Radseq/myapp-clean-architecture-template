@@ -7,15 +7,15 @@ using MyApp.Domain.Common;
 using MyApp.Domain.Orders;
 using System.Text.Json;
 
-namespace MyApp.Application.Orders.Commands.CreateOrder;
+namespace MyApp.Application.Orders.CreateOrderAndDispatchTransport;
 
-public sealed class CreateOrderAndDispatchTransportHandler(
+public sealed class Handler(
     IUnitOfWork uow,
     ICustomerReadRepository customers,
     IOrderDomainRepository orders,
     IOutboxWriter outbox,
     IOutboxDispatcher outboxDispatcher)
-    : IRequestHandler<CreateOrderAndDispatchTransportCommand, MessageResult<CreateOrderAndDispatchTransportResponse>>
+    : IRequestHandler<Command, MessageResult<CreateOrderAndDispatchTransportResponse>>
 {
     private const string OutboxType = "TransportOrderCreated"; // musi siê zgadzaæ z IOutboxMessageHandler.Type
 
@@ -25,7 +25,7 @@ public sealed class CreateOrderAndDispatchTransportHandler(
     };
 
     public async Task<MessageResult<CreateOrderAndDispatchTransportResponse>> Handle(
-        CreateOrderAndDispatchTransportCommand request,
+        Command request,
         CancellationToken cancellationToken)
     {
         if (request.Items is null || request.Items.Count == 0)

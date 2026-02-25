@@ -1,8 +1,6 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using MyApp.Application.Orders.Commands.CreateOrder;
-using MyApp.Application.Orders.Queries.GetOrderById;
 using Swashbuckle.AspNetCore.Annotations;
 using MyApp.Contracts;
 using Microsoft.AspNetCore.Http;
@@ -38,7 +36,7 @@ public sealed class OrdersController(IMediator mediator, IMapper mapper) : Contr
     {
         return await this.SendCreatedAtAction(
             mediator,
-            request: mapper.Map<CreateOrderAndDispatchTransportCommand>(dto),
+            request: mapper.Map<Application.Orders.CreateOrderAndDispatchTransport.Command>(dto),
             mapDto: mapper.Map<CreateOrderAndDispatchTransportResponseDto>,
             getByIdActionName: nameof(GetById),
             routeValuesFactory: resp => this.WithRequestedApiVersion(new { id = resp.OrderId }),
@@ -71,7 +69,7 @@ public sealed class OrdersController(IMediator mediator, IMapper mapper) : Contr
     {
         return await this.SendNoContent(
             mediator,
-            request: mapper.Map<CreateOrderCommand>(dto),
+            request: mapper.Map<Application.Orders.CreateOrder.Command>(dto),
             ct);
     }
 
@@ -93,7 +91,7 @@ public sealed class OrdersController(IMediator mediator, IMapper mapper) : Contr
     {
         return await this.SendOk(
             mediator,
-            new GetOrderByIdQuery(id),
+            new Application.Orders.GetOrderById.Query(id),
             map: mapper.Map<OrderResponseModel>,
             ct);
     }

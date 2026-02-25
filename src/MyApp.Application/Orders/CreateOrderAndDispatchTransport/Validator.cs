@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace MyApp.Application.Orders.Commands.CreateOrder;
+namespace MyApp.Application.Orders.CreateOrderAndDispatchTransport;
 
-public sealed class CreateOrderAndDispatchTransportValidator : AbstractValidator<CreateOrderAndDispatchTransportCommand>
+public sealed class Validator : AbstractValidator<Command>
 {
-    public CreateOrderAndDispatchTransportValidator()
+    public Validator()
     {
         RuleFor(x => x.CustomerId).GreaterThan(0);
 
