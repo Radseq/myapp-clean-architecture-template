@@ -212,9 +212,6 @@
   <data name="warnings.transport.dispatch_failed" xml:space="preserve">
     <value>Zamówienie utworzone, ale wysyłka do transportu nie powiodła się (correlationId: {0}).</value>
   </data>
- <data name="errors.validation.failed" xml:space="preserve">
-  <value>Walidacja nie powiodła się.</value>
-</data>
 <data name="errors.validation.required" xml:space="preserve">
   <value>{0}: pole jest wymagane.</value>
 </data>

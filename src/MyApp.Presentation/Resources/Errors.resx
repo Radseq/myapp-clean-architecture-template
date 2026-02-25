@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
+	<!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,197 +59,194 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
 
-  <data name="errors.customers.not_found" xml:space="preserve">
+	<data name="errors.customers.not_found" xml:space="preserve">
     <value>Nie znaleziono klienta (id: {0}).</value>
   </data>
 
-  <data name="errors.db.conflict" xml:space="preserve">
+	<data name="errors.db.conflict" xml:space="preserve">
     <value>Konflikt podczas zapisu zmian.</value>
   </data>
-  <data name="errors.db.unexpected" xml:space="preserve">
+	<data name="errors.db.unexpected" xml:space="preserve">
     <value>Nieoczekiwany błąd bazy danych.</value>
   </data>
-  <data name="errors.db.pending_changes" xml:space="preserve">
+	<data name="errors.db.pending_changes" xml:space="preserve">
     <value>Wywołano CommitAsync, mimo że istnieją niezapisane zmiany. Wywołaj SaveChangesAsync albo użyj CommitWithSaveAsync.</value>
   </data>
-  <data name="errors.db.duplicate" xml:space="preserve">
+	<data name="errors.db.duplicate" xml:space="preserve">
     <value>Rekord już istnieje.</value>
   </data>
-  <data name="errors.db.foreign_key" xml:space="preserve">
+	<data name="errors.db.foreign_key" xml:space="preserve">
     <value>Naruszenie klucza obcego.</value>
   </data>
 
-  <data name="errors.order.cancel_not_allowed" xml:space="preserve">
+	<data name="errors.order.cancel_not_allowed" xml:space="preserve">
     <value>Nie można anulować zamówienia w aktualnym stanie.</value>
   </data>
-  <data name="errors.order.confirm_invalid_state" xml:space="preserve">
+	<data name="errors.order.confirm_invalid_state" xml:space="preserve">
     <value>Nie można potwierdzić zamówienia w aktualnym stanie.</value>
   </data>
-  <data name="errors.order.customer_invalid" xml:space="preserve">
+	<data name="errors.order.customer_invalid" xml:space="preserve">
     <value>CustomerId musi być &gt; 0.</value>
   </data>
-  <data name="errors.order.id_invalid" xml:space="preserve">
+	<data name="errors.order.id_invalid" xml:space="preserve">
     <value>Id musi być &gt; 0.</value>
   </data>
-  <data name="errors.order.item_not_found" xml:space="preserve">
+	<data name="errors.order.item_not_found" xml:space="preserve">
     <value>Nie znaleziono pozycji.</value>
   </data>
-  <data name="errors.order.items_empty" xml:space="preserve">
+	<data name="errors.order.items_empty" xml:space="preserve">
     <value>Zamówienie musi mieć co najmniej jedną pozycję.</value>
   </data>
-  <data name="errors.order.modify_not_allowed" xml:space="preserve">
+	<data name="errors.order.modify_not_allowed" xml:space="preserve">
     <value>Nie można modyfikować zamówienia w aktualnym stanie.</value>
   </data>
-  <data name="errors.order.quantity_too_high" xml:space="preserve">
+	<data name="errors.order.quantity_too_high" xml:space="preserve">
     <value>Ilość na pozycję nie może przekroczyć limitu.</value>
   </data>
-  <data name="errors.order.total_invalid" xml:space="preserve">
+	<data name="errors.order.total_invalid" xml:space="preserve">
     <value>Suma musi być &gt; 0.</value>
   </data>
-  <data name="errors.order_item.delta_invalid" xml:space="preserve">
+	<data name="errors.order_item.delta_invalid" xml:space="preserve">
     <value>Delta musi być &gt; 0.</value>
   </data>
-  <data name="errors.order_item.product_id_invalid" xml:space="preserve">
+	<data name="errors.order_item.product_id_invalid" xml:space="preserve">
     <value>ProductId musi być &gt; 0.</value>
   </data>
-  <data name="errors.order_item.quantity_invalid" xml:space="preserve">
+	<data name="errors.order_item.quantity_invalid" xml:space="preserve">
     <value>Quantity musi być &gt; 0.</value>
   </data>
-  <data name="errors.order_item.quantity_too_low" xml:space="preserve">
+	<data name="errors.order_item.quantity_too_low" xml:space="preserve">
     <value>Quantity nie może spaść do 0 lub mniej.</value>
   </data>
-  <data name="errors.order_item.unit_price_invalid" xml:space="preserve">
+	<data name="errors.order_item.unit_price_invalid" xml:space="preserve">
     <value>UnitPrice musi być &gt; 0.</value>
   </data>
 
-  <data name="errors.orders.empty_items" xml:space="preserve">
+	<data name="errors.orders.empty_items" xml:space="preserve">
     <value>Zamówienie musi zawierać co najmniej jedną pozycję.</value>
   </data>
-  <data name="errors.orders.not_found" xml:space="preserve">
+	<data name="errors.orders.not_found" xml:space="preserve">
     <value>Nie znaleziono zamówienia (id: {0}).</value>
   </data>
 
-  <data name="errors.transport.api_canceled" xml:space="preserve">
+	<data name="errors.transport.api_canceled" xml:space="preserve">
     <value>Wywołanie Transport API zostało anulowane.</value>
   </data>
-  <data name="errors.transport.api_exception" xml:space="preserve">
+	<data name="errors.transport.api_exception" xml:space="preserve">
     <value>Wywołanie Transport API nie powiodło się z powodu wyjątku.</value>
   </data>
-  <data name="errors.transport.api_failed" xml:space="preserve">
+	<data name="errors.transport.api_failed" xml:space="preserve">
     <value>Wywołanie zewnętrznego Transport API nie powiodło się.</value>
   </data>
 
-  <data name="errors.unexpected" xml:space="preserve">
+	<data name="errors.unexpected" xml:space="preserve">
     <value>Wystąpił nieoczekiwany błąd.</value>
   </data>
 
-  <data name="errors.validation.failed" xml:space="preserve">
+	<data name="errors.validation.failed" xml:space="preserve">
     <value>Walidacja nie powiodła się.</value>
   </data>
-  <data name="errors.validation.field" xml:space="preserve">
+	<data name="errors.validation.field" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
 
-  <data name="warnings.transport.dispatch_failed" xml:space="preserve">
+	<data name="warnings.transport.dispatch_failed" xml:space="preserve">
     <value>Zamówienie utworzone, ale wysyłka do transportu nie powiodła się (correlationId: {0}).</value>
   </data>
-  <data name="errors.validation.failed" xml:space="preserve">
-  <value>Validation failed.</value>
+	<data name="errors.validation.required" xml:space="preserve">
+  <value>{0}: pole jest wymagane.</value>
 </data>
-<data name="errors.validation.required" xml:space="preserve">
-  <value>{0}: is required.</value>
+	<data name="errors.validation.greater_than" xml:space="preserve">
+  <value>{0}: musi być większe niż {1}.</value>
 </data>
-<data name="errors.validation.greater_than" xml:space="preserve">
-  <value>{0}: must be greater than {1}.</value>
+	<data name="errors.validation.greater_or_equal" xml:space="preserve">
+  <value>{0}: musi być większe lub równe {1}.</value>
 </data>
-<data name="errors.validation.greater_or_equal" xml:space="preserve">
-  <value>{0}: must be greater than or equal to {1}.</value>
+	<data name="errors.validation.less_than" xml:space="preserve">
+  <value>{0}: musi być mniejsze niż {1}.</value>
 </data>
-<data name="errors.validation.less_than" xml:space="preserve">
-  <value>{0}: must be less than {1}.</value>
+	<data name="errors.validation.less_or_equal" xml:space="preserve">
+  <value>{0}: musi być mniejsze lub równe {1}.</value>
 </data>
-<data name="errors.validation.less_or_equal" xml:space="preserve">
-  <value>{0}: must be less than or equal to {1}.</value>
+	<data name="errors.validation.between" xml:space="preserve">
+  <value>{0}: musi być w zakresie od {1} do {2}.</value>
 </data>
-<data name="errors.validation.between" xml:space="preserve">
-  <value>{0}: must be between {1} and {2}.</value>
+	<data name="errors.validation.min_length" xml:space="preserve">
+  <value>{0}: długość musi wynosić co najmniej {1}.</value>
 </data>
-<data name="errors.validation.min_length" xml:space="preserve">
-  <value>{0}: length must be at least {1}.</value>
+	<data name="errors.validation.max_length" xml:space="preserve">
+  <value>{0}: długość może wynosić maksymalnie {1}.</value>
 </data>
-<data name="errors.validation.max_length" xml:space="preserve">
-  <value>{0}: length must be at most {1}.</value>
+	<data name="errors.validation.length_between" xml:space="preserve">
+  <value>{0}: długość musi być w zakresie od {1} do {2}.</value>
 </data>
-<data name="errors.validation.length_between" xml:space="preserve">
-  <value>{0}: length must be between {1} and {2}.</value>
+	<data name="errors.validation.email" xml:space="preserve">
+  <value>{0}: musi być poprawnym adresem e-mail.</value>
 </data>
-<data name="errors.validation.email" xml:space="preserve">
-  <value>{0}: must be a valid email address.</value>
+	<data name="errors.validation.precision_scale" xml:space="preserve">
+  <value>{0}: nieprawidłowa precyzja/skala (precyzja: {1}, skala: {2}).</value>
 </data>
-<data name="errors.validation.precision_scale" xml:space="preserve">
-  <value>{0}: invalid precision/scale (precision: {1}, scale: {2}).</value>
-</data>
-<data name="errors.validation.unknown_rule" xml:space="preserve">
-  <value>{0}: invalid value.</value>
+	<data name="errors.validation.unknown_rule" xml:space="preserve">
+  <value>{0}: nieprawidłowa wartość.</value>
 </data>
 
 </root>
