@@ -16,7 +16,6 @@ public sealed class BodyOnErrorLoggingMiddleware
 
     private readonly RequestDelegate _next;
     private readonly ILogger<BodyOnErrorLoggingMiddleware> _logger;
-    private readonly IFailedHttpPayloadStore _store;
 
     // snapshot bez alokacji per-request
     private volatile Snapshot _snapshot;
@@ -24,18 +23,16 @@ public sealed class BodyOnErrorLoggingMiddleware
     public BodyOnErrorLoggingMiddleware(
         RequestDelegate next,
         ILogger<BodyOnErrorLoggingMiddleware> logger,
-        IFailedHttpPayloadStore store,
         IOptionsMonitor<BodyLoggingOptions> options)
     {
         _next = next;
         _logger = logger;
-        _store = store;
 
         _snapshot = Snapshot.From(options.CurrentValue);
         options.OnChange((o, _) => _snapshot = Snapshot.From(o));
     }
 
-    public async Task Invoke(HttpContext ctx)
+    public async Task InvokeAsync(HttpContext ctx, IFailedHttpPayloadStore store)
     {
         var s = _snapshot;
 
@@ -196,7 +193,7 @@ public sealed class BodyOnErrorLoggingMiddleware
 
             var ttl = TimeSpan.FromMinutes(Math.Max(1, s.StoreTtlMinutes));
 
-            await _store.TryStoreAsync(payload, ttl, ctx.RequestAborted);
+            await store.TryStoreAsync(payload, ttl, ctx.RequestAborted);
 
             ctx.Items[ItemKey] = key;
 

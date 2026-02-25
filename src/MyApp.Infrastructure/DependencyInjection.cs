@@ -18,6 +18,7 @@ using MyApp.Infrastructure.Outbox.Handlers;
 using MyApp.Infrastructure.Persistence;
 using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst;
 using MyApp.Infrastructure.Persistence.Repositories;
+using MyApp.Infrastructure.Persistence.Repositories.Observability;
 using MyApp.Infrastructure.Security;
 using StackExchange.Redis;
 
@@ -107,7 +108,8 @@ public static class DependencyInjection
         }
         else if (string.Equals(bodyStoreMode, "Sql", StringComparison.OrdinalIgnoreCase))
         {
-            services.AddScoped<IFailedHttpPayloadStore, EfFailedHttpPayloadStore>);
+            // musi być AddSingleton ponieważ IFailedHttpPayloadStore jest użyty w middleware
+            services.AddSingleton<IFailedHttpPayloadStore, HttpPayloadStoreWriteRepository>();
         }
         else
         {

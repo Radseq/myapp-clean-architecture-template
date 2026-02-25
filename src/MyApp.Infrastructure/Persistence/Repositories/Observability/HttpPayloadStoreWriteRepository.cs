@@ -2,15 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MyApp.Application.Abstractions.Observability;
+using MyApp.Application.Abstractions.Persistence;
 using MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst;
 using System.Text.Json;
 
-namespace MyApp.Infrastructure.Observability;
+namespace MyApp.Infrastructure.Persistence.Repositories.Observability;
 
-public sealed class EfFailedHttpPayloadStore(
-    IServiceScopeFactory scopeFactory,
-    ILogger<EfFailedHttpPayloadStore> logger)
-    : IFailedHttpPayloadStore
+internal sealed class HttpPayloadStoreWriteRepository(IServiceScopeFactory scopeFactory,
+    ILogger<HttpPayloadStoreWriteRepository> logger) : IFailedHttpPayloadStore
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -21,15 +20,14 @@ public sealed class EfFailedHttpPayloadStore(
     {
         try
         {
-            // osobny scope => osobny AppDbContext => nie wchodzisz w transakcję / UoW requestu
-            using var scope = scopeFactory.CreateScope();
+            await using var scope = scopeFactory.CreateAsyncScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var headersJson = payload.Headers is null
                 ? null
                 : JsonSerializer.Serialize(payload.Headers, JsonOptions);
 
-            var entity = new Persistence.MicrosoftSqlServer.DbFirst.Entities.FailedHttpPayload
+            var entity = new MicrosoftSqlServer.DbFirst.Entities.FailedHttpPayload
             {
                 CreatedAtUtc = payload.CreatedAtUtc.UtcDateTime,
 
@@ -53,7 +51,8 @@ public sealed class EfFailedHttpPayloadStore(
                 ResponseBody = payload.ResponseBody
             };
 
-            db.Add(entity);
+            db.FailedHttpPayloads.Add(entity);
+
             await db.SaveChangesAsync(ct);
 
             // Opcjonalny retention cleanup (best-effort). Jeśli nie chcesz, usuń blok.
