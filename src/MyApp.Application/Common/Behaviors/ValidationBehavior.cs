@@ -1,7 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
-using MyApp.Application.Common;
 using MyApp.Domain.Common;
 using System.Collections;
 using System.Globalization;
