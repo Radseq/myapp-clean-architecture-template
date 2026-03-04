@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="14.0.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\MyApp.BuildingBlocks.Application\MyApp.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\..\IntegrationContracts\MyApp.IntegrationContracts.csproj" />
+    <ProjectReference Include="..\MyApp.Modules.Orders.Domain\MyApp.Modules.Orders.Domain.csproj" />
+  </ItemGroup>
+</Project>

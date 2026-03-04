@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Abstractions\Outbox\**" />
+    <Compile Remove="Orders\**" />
+    <EmbeddedResource Remove="Abstractions\Outbox\**" />
+    <EmbeddedResource Remove="Orders\**" />
+    <None Remove="Abstractions\Outbox\**" />
+    <None Remove="Orders\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="14.0.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\MyApp.BuildingBlocks.Application\MyApp.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\MyApp.BuildingBlocks.Domain\MyApp.BuildingBlocks.Domain.csproj" />
+    <ProjectReference Include="..\..\..\IntegrationContracts\MyApp.IntegrationContracts.csproj" />
+  </ItemGroup>
+</Project>

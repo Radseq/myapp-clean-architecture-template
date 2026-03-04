@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MyApp.Modules.Orders.Application\MyApp.Modules.Orders.Application.csproj" />
+    <ProjectReference Include="..\MyApp.Modules.Orders.Infrastructure\MyApp.Modules.Orders.Infrastructure.csproj" />
+    <ProjectReference Include="..\MyApp.Modules.Orders.Presentation\MyApp.Modules.Orders.Presentation.csproj" />
+  </ItemGroup>
+</Project>

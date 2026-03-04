@@ -1,0 +1,22 @@
+Dodawać
+
+        services.AddHttpClient<ITransportApiClient, TransportApiClient>(http =>
+        {
+            var baseUrl = cfg["TransportApi:BaseUrl"];
+            if (!string.IsNullOrWhiteSpace(baseUrl))
+                http.BaseAddress = new Uri(baseUrl);
+
+            http.Timeout = TimeSpan.FromSeconds(10);
+        })
+        .AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
+		
+w modułach kidy wykonujemy http request do własnych api (chodzi tu o .AddHttpMessageHandler<CorrelationIdDelegatingHandler>();)
+
+
+
+
+mały problem z MyApp.BuildingBlocks.Infrastructure.Observability.Persistence;
+persistence służy, by dodać rekord do tablicy FailedHttpPayload (wd. ustawień ofc)
+więc trochę kiepsko by building bloks dodawało coś do razy, ale z drugiej strony obsługuję też redis więc ....
+
+można by było dodać moduł, ale znów tak mały moduł, by móc wrzucać coś do bazy i tylko kiedy opcję odpowiednio się ustawi....
