@@ -1,23 +1,5 @@
 # MyApp — Modular Monolith Clean Architecture Template (Extended)
 
-This is the **extended** README: it keeps the “quick start” clarity from the current template README, **and** brings back the deeper architecture/operations notes from the legacy README — but only where they are **accurate for the current codebase**.
-
-If you prefer a shorter front page, keep `README_NEW.md` as the root README and move this file to `docs/README_EXTENDED.md`.
-
----
-
-## 0) What changed vs the legacy README?
-
-The legacy README was written **before** the modular-monolith rebuild and mixed three types of content:
-
-1) **Accurate architecture contracts** (still valid today)  
-2) **Optional/roadmap items** (recommended patterns, not always implemented)  
-3) **Outdated repo wiring** (e.g., running `src/MyApp.Api` — today the host is `src/MyApp.Host`)
-
-This file separates **Implemented** vs **Recommended** so documentation does not “promise features”.
-
----
-
 ## 1) Goals
 
 - Modular monolith that can be **mechanically split into microservices**
