@@ -120,22 +120,24 @@ Pasteable **Mermaid** C4-style diagram for README.
 
 ```mermaid
 flowchart TB
-  user["Client / UI"] --> host["MyApp.Host (ASP.NET Core)"]
-  host --> pres["Presentation (Controllers + Middlewares)"]
-  pres --> app["Application (MediatR Handlers + Behaviors)"]
-  app --> dom["Domain (Aggregates, Policies)"]
-  app --> infra["Infrastructure (EF, HttpClients, Outbox)"]
-  infra --> db["SQL Server"]
-  infra --> redis["Redis (optional)"]
-  infra --> ext["External Transport API"]
+  user["Client / UI"] --> api["MyApp.Host\nASP.NET Core"]
+
+  api --> pres["Presentation\nControllers + Middlewares"]
+  pres --> app["Application\nMediatR Handlers + Behaviors"]
+  app --> dom["Domain\nAggregates + Policies"]
+  app --> infra["Infrastructure\nEF + HttpClients + Outbox"]
+
+  infra --> db[("SQL Server")]
+  infra --> redis[("Redis (optional)")]
+  infra --> transport["External Transport API"]
 
   subgraph Modules
     orders["Orders Module"]
-    transport["Transport Module"]
+    transportM["Transport Module"]
   end
 
-  host --> orders
-  host --> transport
+  api --> orders
+  api --> transportM
 ```
 
 ---
@@ -145,26 +147,27 @@ flowchart TB
 ```mermaid
 sequenceDiagram
   autonumber
-  participant C as Client
-  participant API as ASP.NET Core (Host)
-  participant M as Middleware Pipeline
-  participant CTR as Controller
-  participant MR as MediatR Pipeline
-  participant H as Handler
-  participant UoW as UnitOfWorkBehavior
-  participant DB as SQL Server
+  participant C as "Client"
+  participant API as "ASP.NET Core Host"
+  participant M as "Middleware Pipeline"
+  participant CTR as "Controller"
+  participant MR as "MediatR Pipeline"
+  participant H as "Handler"
+  participant UoW as "UnitOfWorkBehavior"
+  participant DB as "SQL Server"
 
   C->>API: HTTP request
-  API->>M: CorrelationId + RequestLogging + (BodyOnError) + Exception
+  API->>M: CorrelationId + RequestLogging + BodyOnError + Exception
   M->>CTR: Route to controller/action
   CTR->>MR: Send Command/Query
-  MR->>H: Validate/Caching/UoW
+  MR->>H: Validate / Caching / UoW
+
   alt Query
     H->>DB: Read
     DB-->>H: Data
     H-->>MR: Result
   else Command
-    MR->>UoW: Begin tx + SaveChanges on success
+    MR->>UoW: Begin tx (if enabled)
     UoW->>H: Execute handler
     H->>DB: Write
     DB-->>H: OK
@@ -172,6 +175,7 @@ sequenceDiagram
     UoW->>DB: Commit
     UoW-->>MR: Result
   end
+
   MR-->>CTR: Result
   CTR-->>M: HTTP response (ProblemDetails on fail)
   M-->>C: Response + X-Correlation-ID
@@ -257,30 +261,30 @@ Ensures:
 ```mermaid
 sequenceDiagram
   autonumber
-  participant API as Orders API
-  participant DB as OrdersDb (SQL)
-  participant OB as Outbox Worker
-  participant H as Outbox Handler (Transport)
-  participant T as External Transport API
+  participant API as "Orders API"
+  participant DB as "OrdersDb SQL"
+  participant OB as "Outbox Worker"
+  participant H as "Outbox Handler - Transport"
+  participant T as "External Transport API"
 
   API->>DB: Begin tx
   API->>DB: Insert Order
-  API->>DB: Insert OutboxMessage(type=TransportOrderCreated)
+  API->>DB: Insert OutboxMessage (type = TransportOrderCreated)
   API->>DB: Commit tx
 
   loop Poll batch
     OB->>DB: Lease N pending messages
     DB-->>OB: Messages
     OB->>H: Dispatch message
-    H->>T: POST /transport (Idempotency-Key)
+    H->>T: POST transport (Idempotency-Key)
     alt success
       T-->>H: 2xx
-      H-->>OB: Success
+      H-->>OB: Done
       OB->>DB: Mark Done
     else transient failure
-      T-->>H: 5xx/timeout
-      H-->>OB: Retry(after backoff)
-      OB->>DB: Schedule NextAttemptUtc
+      T-->>H: 5xx / timeout
+      H-->>OB: Retry (backoff)
+      OB->>DB: Set NextAttemptUtc
     else permanent failure
       T-->>H: 4xx validation
       H-->>OB: Dead-letter
