@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Asp.Versioning.Http" Version="8.1.1" />
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.1" />
+		<PackageReference Include="AutoMapper" Version="14.0.0" />
+		<PackageReference Include="NLog" Version="6.1.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\BuildingBlocks\MyApp.BuildingBlocks.Presentation\MyApp.BuildingBlocks.Presentation.csproj" />
+	  <ProjectReference Include="..\MyApp.Modules.Orders.Application\MyApp.Modules.Orders.Application.csproj" />
+	  <ProjectReference Include="..\MyApp.Modules.Orders.Contracts\MyApp.Modules.Orders.Contracts.csproj" />
+	</ItemGroup>
+</Project>

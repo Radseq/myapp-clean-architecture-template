@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="14.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.13" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.13" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.13" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.13">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.13" />
+		<PackageReference Include="StackExchange.Redis" Version="2.11.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.13" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.13" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\BuildingBlocks\MyApp.BuildingBlocks.Application\MyApp.BuildingBlocks.Application.csproj" />
+		<ProjectReference Include="..\..\..\BuildingBlocks\MyApp.BuildingBlocks.Infrastructure\MyApp.BuildingBlocks.Infrastructure.csproj" />
+		<ProjectReference Include="..\..\..\IntegrationContracts\MyApp.IntegrationContracts.csproj" />
+		<ProjectReference Include="..\MyApp.Modules.Transport.Application\MyApp.Modules.Transport.Application.csproj" />
+	</ItemGroup>
+</Project>

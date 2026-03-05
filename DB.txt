@@ -138,14 +138,15 @@ GO
 dotnet ef dbcontext scaffold ^
 "Data Source=JNTRD003\SQLEXPRESS;Initial Catalog=MyApp;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=30;" ^
 Microsoft.EntityFrameworkCore.SqlServer ^
---context AppDbContext ^
+--context OrdersDbContext ^
 --context-dir Persistence/MicrosoftSqlServer/DbFirst ^
 --output-dir Persistence/MicrosoftSqlServer/DbFirst/Entities ^
 --namespace MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities ^
 --context-namespace MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst ^
---table Customer --table Order --table OrderItem --table OutboxMessages --table FailedHttpPayload ^
+--table Customer --table Order --table OrderItem --table OrdersOutboxMessage --table FailedHttpPayload ^
 --use-database-names ^
 --no-onconfiguring ^
 --force
 
-Scaffold-DbContext 'Server=JNTRD003\SQLEXPRESS;Database=MyApp;Trusted_Connection=True;TrustServerCertificate=True;Connection Timeout=30;' Microsoft.EntityFrameworkCore.SqlServer -Context AppDbContext -ContextDir 'Persistence/MicrosoftSqlServer/DbFirst' -OutputDir 'Persistence/MicrosoftSqlServer/DbFirst/Entities' -Namespace 'MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities' -ContextNamespace 'MyApp.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst' -Tables 'Customer','dbo.Order','OrderItem','OutboxMessages','FailedHttpPayload' -UseDatabaseNames -NoOnConfiguring -Force
+
+Scaffold-DbContext "Server=.\SQLEXPRESS;Database=MyApp;Trusted_Connection=True;TrustServerCertificate=True;Connection Timeout=30;" Microsoft.EntityFrameworkCore.SqlServer -Context OrdersDbContext -ContextDir "Persistence\MicrosoftSqlServer\DbFirst" -OutputDir "Persistence\MicrosoftSqlServer\DbFirst\Entities" -Namespace "MyApp.Modules.Orders.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities" -ContextNamespace "MyApp.Modules.Orders.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst" -Tables "dbo.Customer","dbo.[Order]","dbo.OrderItem","dbo.OrdersOutboxMessage","dbo.FailedHttpPayload" -UseDatabaseNames -NoOnConfiguring -Force
