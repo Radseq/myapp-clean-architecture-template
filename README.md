@@ -116,28 +116,30 @@ Modules **do not reference each other directly**. Integration happens through:
 
 ## Architecture diagram (C4)
 
-Pasteable **Mermaid** C4-style diagram for README.
-
 ```mermaid
 flowchart TB
-  user["Client / UI"] --> api["MyApp.Host\nASP.NET Core"]
+  user["Client / UI"] --> host["MyApp.Host<br/>ASP.NET Core"]
 
-  api --> pres["Presentation Controllers + Middlewares"]
-  pres --> app["Application MediatR Handlers + Behaviors"]
-  app --> dom["Domain Aggregates + Policies"]
-  app --> infra["Infrastructure EF + HttpClients + Outbox"]
-
-  infra --> db[("SQL Server")]
-  infra --> redis[("Redis (optional)")]
-  infra --> transport["External Transport API"]
-
-  subgraph Modules
-    orders["Orders Module"]
-    transportM["Transport Module"]
+  subgraph Orders["Orders Module"]
+    oPres["Presentation<br/>Controllers + Middlewares"] --> oApp["Application<br/>MediatR Handlers + Behaviors"]
+    oApp --> oDom["Domain<br/>Aggregates + Policies"]
+    oApp --> oAbst["Application Abstractions<br/>(Ports)"]
+    oInfra["Infrastructure<br/>EF + HttpClients + Outbox"] --> oAbst
   end
 
-  api --> orders
-  api --> transportM
+  subgraph Transport["Transport Module"]
+    tPres["Presentation"] --> tApp["Application"]
+    tApp --> tDom["Domain"]
+    tApp --> tAbst["Application Abstractions<br/>(Ports)"]
+    tInfra["Infrastructure"] --> tAbst
+  end
+
+  host --> oPres
+  host --> tPres
+
+  oInfra --> db[("SQL Server")]
+  oInfra --> redis[("Redis (optional)")]
+  tInfra --> transportApi["External Transport API"]
 ```
 
 ---
