@@ -38,7 +38,6 @@ try
 
 	app.UsePresentation();
 
-	app.MapControllers();
 	await app.RunAsync();
 }
 catch (Exception ex)

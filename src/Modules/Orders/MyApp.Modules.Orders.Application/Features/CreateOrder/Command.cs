@@ -7,7 +7,7 @@ public sealed record Command(
 	int CustomerId,
 	DateTime? OrderDateUtc,
 	List<CreateOrderItemRequest> Items
-) : ICommand, ITransactionalCommand;
+) : ICommand<CreateOrderAndDispatchTransportResponse>, ISkipUnitOfWorkBehavior;
 
 // ISkipUnitOfWorkBehavior or ITransactionalCommand etc\
 // ISkipUnitOfWorkBehavior by nie robi³ automatycznie begin async, save async, commit, rollback

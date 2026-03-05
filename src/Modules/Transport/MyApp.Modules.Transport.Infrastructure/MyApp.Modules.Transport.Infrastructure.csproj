@@ -25,6 +25,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\BuildingBlocks\MyApp.BuildingBlocks.Application\MyApp.BuildingBlocks.Application.csproj" />
+		<ProjectReference Include="..\..\..\BuildingBlocks\MyApp.BuildingBlocks.Infrastructure\MyApp.BuildingBlocks.Infrastructure.csproj" />
 		<ProjectReference Include="..\..\..\IntegrationContracts\MyApp.IntegrationContracts.csproj" />
 		<ProjectReference Include="..\MyApp.Modules.Transport.Application\MyApp.Modules.Transport.Application.csproj" />
 	</ItemGroup>

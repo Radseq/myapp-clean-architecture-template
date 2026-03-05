@@ -1,3 +1,3 @@
-﻿namespace MyApp.Modules.Orders.Infrastructure;
+﻿namespace MyApp.Modules.Transport.Infrastructure;
 
 public sealed class TransportInfrastructureAssemblyMarker { }

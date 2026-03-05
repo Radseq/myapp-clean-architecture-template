@@ -3,7 +3,7 @@ using MyApp.Modules.Orders.Application.Features.CreateOrderAndDispatchTransport;
 using MyApp.Modules.Orders.Application.Features.GetOrderById;
 using MyApp.Modules.Orders.Contracts;
 
-namespace MyApp.Presentation.Mappings;
+namespace MyApp.Modules.Orders.Presentation.Mappings;
 public sealed class OrdersApiMappingProfile : Profile
 {
 	public OrdersApiMappingProfile()
@@ -26,9 +26,9 @@ public sealed class OrdersApiMappingProfile : Profile
 			.ForCtorParam(nameof(OrderResponseModel.Items),
 				opt => opt.MapFrom(s => s.Items));
 
-        CreateMap<CreateOrderAndDispatchTransportRequestDto, Modules.Orders.Application.Features.CreateOrder.Command>()
+        CreateMap<CreateOrderAndDispatchTransportRequestDto, Application.Features.CreateOrder.Command>()
 		// OrderDateUtc: DTO może być DateTimeOffset? -> command DateTime?
-		.ForCtorParam(nameof(Modules.Orders.Application.Features.CreateOrder.Command.OrderDateUtc),
+		.ForCtorParam(nameof(Application.Features.CreateOrder.Command.OrderDateUtc),
 			opt => opt.MapFrom(src => src.OrderDateUtc.HasValue
 				? src.OrderDateUtc.Value.UtcDateTime
 				: (DateTime?)null));

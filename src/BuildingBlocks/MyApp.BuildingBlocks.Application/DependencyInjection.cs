@@ -14,10 +14,10 @@ public static class DependencyInjection
 		services.AddScoped<IUnitOfWorkResolver, UnitOfWorkResolver>();
 
 		// Global pipeline (działa dla wszystkich modułów)
-		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestLoggingBehavior<,>));
-		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
+		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryCachingBehavior<,>));
+		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
 
 		// UWAGA: MediatR rejestrujesz per moduł (nie globalnie), więc tutaj nic nie skanuj.
 		// FluentValidation też per moduł.
