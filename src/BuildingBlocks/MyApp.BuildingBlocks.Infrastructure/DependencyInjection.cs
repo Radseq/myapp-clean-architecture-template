@@ -53,6 +53,8 @@ public static class DependencyInjection
 
 		services.TryAddSingleton<IFailedHttpPayloadStore, NullFailedHttpPayloadStore>();
 
+		services.AddTransient<CorrelationIdDelegatingHandler>();
+
 		services.AddObservabilityPayloadStore(cfg);
 
 		return services;
