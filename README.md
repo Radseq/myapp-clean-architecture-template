@@ -120,23 +120,22 @@ Pasteable **Mermaid** C4-style diagram for README.
 
 ```mermaid
 flowchart TB
-  %% C4-ish container view
-  user([Client / UI]) --> api[MyApp.Host (ASP.NET Core)]
-  api --> pres[Presentation (Controllers + Middlewares)]
-  pres --> app[Application (MediatR Handlers + Behaviors)]
-  app --> dom[Domain (Aggregates, Policies)]
-  app --> infra[Infrastructure (EF, HttpClients, Outbox)]
-  infra --> db[(SQL Server)]
-  infra --> redis[(Redis - optional)]
-  infra --> transport[External Transport API]
+  user["Client / UI"] --> host["MyApp.Host (ASP.NET Core)"]
+  host --> pres["Presentation (Controllers + Middlewares)"]
+  pres --> app["Application (MediatR Handlers + Behaviors)"]
+  app --> dom["Domain (Aggregates, Policies)"]
+  app --> infra["Infrastructure (EF, HttpClients, Outbox)"]
+  infra --> db["SQL Server"]
+  infra --> redis["Redis (optional)"]
+  infra --> ext["External Transport API"]
 
   subgraph Modules
-    orders[Orders Module]
-    transportM[Transport Module]
+    orders["Orders Module"]
+    transport["Transport Module"]
   end
 
-  api --> orders
-  api --> transportM
+  host --> orders
+  host --> transport
 ```
 
 ---
