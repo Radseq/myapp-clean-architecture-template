@@ -122,10 +122,10 @@ Pasteable **Mermaid** C4-style diagram for README.
 flowchart TB
   user["Client / UI"] --> api["MyApp.Host\nASP.NET Core"]
 
-  api --> pres["Presentation\nControllers + Middlewares"]
-  pres --> app["Application\nMediatR Handlers + Behaviors"]
-  app --> dom["Domain\nAggregates + Policies"]
-  app --> infra["Infrastructure\nEF + HttpClients + Outbox"]
+  api --> pres["Presentation Controllers + Middlewares"]
+  pres --> app["Application MediatR Handlers + Behaviors"]
+  app --> dom["Domain Aggregates + Policies"]
+  app --> infra["Infrastructure EF + HttpClients + Outbox"]
 
   infra --> db[("SQL Server")]
   infra --> redis[("Redis (optional)")]
