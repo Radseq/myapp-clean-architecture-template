@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using MyApp.BuildingBlocks.Application.Abstractions.Security;
 using MyApp.BuildingBlocks.Presentation.ErrorHandling;
 using MyApp.BuildingBlocks.Presentation.Observability;
 using MyApp.BuildingBlocks.Presentation.OpenApi;
+using MyApp.BuildingBlocks.Presentation.Security;
 
 namespace MyApp.BuildingBlocks.Presentation.DependencyInjection;
 
@@ -32,6 +35,8 @@ public static class PresentationServiceCollectionExtensions
 		services.AddSwaggerWithVersioning();
 
 		services.AddHttpContextAccessor();
+
+		services.TryAddScoped<ICurrentUserService, CurrentUserService>();
 
 		//if (env.IsDevelopment())
 		//{

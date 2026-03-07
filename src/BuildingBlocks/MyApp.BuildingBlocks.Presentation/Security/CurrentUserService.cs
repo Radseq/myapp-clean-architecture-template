@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using MyApp.BuildingBlocks.Application.Abstractions.Security;
 
-namespace MyApp.BuildingBlocks.Infrastructure.Security;
+namespace MyApp.BuildingBlocks.Presentation.Security;
 
 public sealed class CurrentUserService(IHttpContextAccessor accessor) : ICurrentUserService
 {

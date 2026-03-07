@@ -5,12 +5,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using MyApp.BuildingBlocks.Application.Abstractions.Caching;
 using MyApp.BuildingBlocks.Application.Abstractions.Observability;
-using MyApp.BuildingBlocks.Application.Abstractions.Security;
 using MyApp.BuildingBlocks.Infrastructure.Caching;
 using MyApp.BuildingBlocks.Infrastructure.Http;
 using MyApp.BuildingBlocks.Infrastructure.Observability;
 using MyApp.BuildingBlocks.Infrastructure.Observability.Persistence;
-using MyApp.BuildingBlocks.Infrastructure.Security;
 using StackExchange.Redis;
 
 namespace MyApp.BuildingBlocks.Infrastructure;
@@ -48,8 +46,6 @@ public static class DependencyInjection
 		{
 			services.AddSingleton<IAppCache, MemoryAppCache>();
 		}
-
-		services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 		services.TryAddSingleton<IFailedHttpPayloadStore, NullFailedHttpPayloadStore>();
 
