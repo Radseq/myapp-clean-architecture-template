@@ -24,11 +24,11 @@ public sealed class Order
     public static MessageResult<Order> Create(int customerId, DateTime orderDateUtc, IEnumerable<OrderItem> items)
     {
         if (customerId <= 0)
-            return MessageResult<Order>.Fail(OrderErrors.CustomerInvalid.WithArgs(customerId));
+            return MessageResult<Order>.Fail(OrderDomainErrors.CustomerInvalid.WithArgs(customerId));
 
         var list = items?.ToList() ?? new List<OrderItem>();
         if (list.Count == 0)
-            return MessageResult<Order>.Fail(OrderErrors.ItemsEmpty);
+            return MessageResult<Order>.Fail(OrderDomainErrors.ItemsEmpty);
 
         var order = new Order(customerId, orderDateUtc);
 
@@ -60,14 +60,14 @@ public sealed class Order
         IEnumerable<OrderItem> items)
     {
         if (id <= 0)
-            return MessageResult<Order>.Fail(OrderErrors.IdInvalid.WithArgs(id));
+            return MessageResult<Order>.Fail(OrderDomainErrors.IdInvalid.WithArgs(id));
 
         if (customerId <= 0)
-            return MessageResult<Order>.Fail(OrderErrors.CustomerInvalid.WithArgs(customerId));
+            return MessageResult<Order>.Fail(OrderDomainErrors.CustomerInvalid.WithArgs(customerId));
 
         var list = items?.ToList() ?? new List<OrderItem>();
         if (list.Count == 0)
-            return MessageResult<Order>.Fail(OrderErrors.ItemsEmpty);
+            return MessageResult<Order>.Fail(OrderDomainErrors.ItemsEmpty);
 
         var order = new Order(customerId, orderDateUtc);
 
@@ -97,7 +97,7 @@ public sealed class Order
     {
         if (Status != OrderStatus.Draft)
             return MessageResult.Fail(
-                OrderErrors.ModifyNotAllowed.WithArgs(Status.ToString()));
+                OrderDomainErrors.ModifyNotAllowed.WithArgs(Status.ToString()));
 
         // merge: ProductId + UnitPrice
         var existing = _items.FirstOrDefault(x => x.ProductId == item.ProductId && x.UnitPrice == item.UnitPrice);
@@ -115,17 +115,17 @@ public sealed class Order
     {
         if (Status != OrderStatus.Draft)
             return MessageResult.Fail(
-                OrderErrors.ModifyNotAllowed.WithArgs(Status.ToString()));
+                OrderDomainErrors.ModifyNotAllowed.WithArgs(Status.ToString()));
 
         var idx = _items.FindIndex(x => x.ProductId == productId);
         if (idx < 0)
             return MessageResult.Fail(
-                OrderErrors.ItemNotFound.WithArgs(productId));
+                OrderDomainErrors.ItemNotFound.WithArgs(productId));
 
         _items.RemoveAt(idx);
 
         if (_items.Count == 0)
-            return MessageResult.Fail(OrderErrors.ItemsEmpty);
+            return MessageResult.Fail(OrderDomainErrors.ItemsEmpty);
 
         return MessageResult.Ok();
     }
@@ -134,7 +134,7 @@ public sealed class Order
     {
         if (Status != OrderStatus.Draft)
             return MessageResult.Fail(
-                OrderErrors.ConfirmInvalidState.WithArgs(Status.ToString()));
+                OrderDomainErrors.ConfirmInvalidState.WithArgs(Status.ToString()));
 
         var rules = ValidateBusinessRules();
         if (!rules.IsSuccess)
@@ -151,7 +151,7 @@ public sealed class Order
 
         // przyk³adowa polityka: confirmed nie mo¿na anulowaæ
         if (Status == OrderStatus.Confirmed)
-            return MessageResult.Fail(OrderErrors.CancelNotAllowed);
+            return MessageResult.Fail(OrderDomainErrors.CancelNotAllowed);
 
         Status = OrderStatus.Cancelled;
         return MessageResult.Ok();
@@ -161,10 +161,10 @@ public sealed class Order
     {
         // regu³a biznesowa: limit
         if (_items.Any(i => i.Quantity > 1000))
-            return MessageResult.Fail(OrderErrors.QuantityTooHigh.WithArgs(1000));
+            return MessageResult.Fail(OrderDomainErrors.QuantityTooHigh.WithArgs(1000));
 
         if (TotalAmount <= 0m)
-            return MessageResult.Fail(OrderErrors.TotalInvalid.WithArgs(TotalAmount));
+            return MessageResult.Fail(OrderDomainErrors.TotalInvalid.WithArgs(TotalAmount));
 
         return MessageResult.Ok();
     }

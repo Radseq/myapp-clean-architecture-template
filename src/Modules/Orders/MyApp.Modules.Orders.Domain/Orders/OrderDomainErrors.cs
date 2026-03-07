@@ -2,7 +2,7 @@
 
 namespace MyApp.Modules.Orders.Domain.Orders;
 
-internal static class OrderErrors
+internal static class OrderDomainErrors
 {
     // Validation (400)
     public static readonly ErrorData CustomerInvalid = new(
