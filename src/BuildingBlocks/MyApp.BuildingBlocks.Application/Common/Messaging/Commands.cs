@@ -64,22 +64,22 @@ public interface IQuery<TResponse> : IRequest<MessageResult<TResponse>>, IQueryM
 /// </summary>
 public interface ICacheableQuery : IQueryMarker
 {
-    /// <summary>Unikalny fragment klucza zależny od parametrów zapytania.</summary>
-    string CacheKey { get; }
+	/// <summary>Unikalny fragment klucza zależny od parametrów zapytania.</summary>
+	string CacheKey { get; }
 
-    /// <summary>TTL dla Success (typowo 0.5–2s na deduplikację burstów).</summary>
-    TimeSpan Ttl { get; }
+	/// <summary>TTL dla Success (typowo 0.5–2s na deduplikację burstów).</summary>
+	TimeSpan Ttl { get; }
 
-    /// <summary>Zakres cache (Global/User/Tenant). Dla Keycloak zwykle User/Tenant.</summary>
-    CacheScope Scope { get; }
+	/// <summary>Zakres cache (Global/User/Tenant). Dla Keycloak zwykle User/Tenant.</summary>
+	CacheScope Scope { get; }
 
-    /// <summary>Czy cache’ować NotFound (krótko), żeby nie bić DB “gorącymi” 404.</summary>
-    bool CacheNotFound { get; }
+	/// <summary>Czy cache’ować NotFound (krótko), żeby nie bić DB “gorącymi” 404.</summary>
+	bool CacheNotFound { get; }
 
-    /// <summary>TTL dla NotFound (np. 250–800ms).</summary>
-    TimeSpan NotFoundTtl { get; }
+	/// <summary>TTL dla NotFound (np. 250–800ms).</summary>
+	TimeSpan NotFoundTtl { get; }
 
-    bool VaryByRoles { get; }
+	bool VaryByRoles { get; }
 }
 
 public interface ICacheableQuery<TResponse> : IQuery<TResponse>, ICacheableQuery { }

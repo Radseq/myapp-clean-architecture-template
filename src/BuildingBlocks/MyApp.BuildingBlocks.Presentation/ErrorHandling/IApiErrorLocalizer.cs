@@ -4,6 +4,6 @@ namespace MyApp.BuildingBlocks.Presentation.ErrorHandling;
 
 public interface IApiErrorLocalizer
 {
-    ErrorData Localize(ErrorData e);
-    IReadOnlyList<ErrorData> Localize(IReadOnlyList<ErrorData> list);
+	ErrorData Localize(ErrorData e);
+	IReadOnlyList<ErrorData> Localize(IReadOnlyList<ErrorData> list);
 }

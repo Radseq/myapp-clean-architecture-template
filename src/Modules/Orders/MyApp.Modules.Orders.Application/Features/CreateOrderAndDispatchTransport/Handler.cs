@@ -14,7 +14,7 @@ public sealed class Handler(
 	ICustomerReadRepository customers,
 	IOrderDomainRepository orders,
 	IOutboxWriter<OutboxOwners.Orders> outbox,
-	IOutboxDispatcher<OutboxOwners.Orders> outboxDispatcher) 
+	IOutboxDispatcher<OutboxOwners.Orders> outboxDispatcher)
 	: IRequestHandler<Command, MessageResult<CreateOrderAndDispatchTransportResponse>>
 {
 	private static readonly JsonSerializerOptions JsonOptions = new()

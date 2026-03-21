@@ -8,7 +8,7 @@
 /// </summary>
 public enum CacheScope
 {
-    Global,   // wspólne dla wszystkich (uwaga na dane użytkownika!)
-    User,     // per user (Keycloak sub)
-    Tenant    // per tenant (jeśli masz tenantId claim)
+	Global,   // wspólne dla wszystkich (uwaga na dane użytkownika!)
+	User,     // per user (Keycloak sub)
+	Tenant    // per tenant (jeśli masz tenantId claim)
 }

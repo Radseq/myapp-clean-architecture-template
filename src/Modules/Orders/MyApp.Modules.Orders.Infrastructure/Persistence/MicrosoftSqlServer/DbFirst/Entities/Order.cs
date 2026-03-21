@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MyApp.Modules.Orders.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities;
+﻿namespace MyApp.Modules.Orders.Infrastructure.Persistence.MicrosoftSqlServer.DbFirst.Entities;
 
 public partial class Order
 {
-    public int Id { get; set; }
+	public int Id { get; set; }
 
-    public int CustomerId { get; set; }
+	public int CustomerId { get; set; }
 
-    public DateTime OrderDateUtc { get; set; }
+	public DateTime OrderDateUtc { get; set; }
 
-    public string Status { get; set; } = null!;
+	public string Status { get; set; } = null!;
 
-    public decimal TotalAmount { get; set; }
+	public decimal TotalAmount { get; set; }
 
-    public virtual Customer Customer { get; set; } = null!;
+	public virtual Customer Customer { get; set; } = null!;
 
-    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+	public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }

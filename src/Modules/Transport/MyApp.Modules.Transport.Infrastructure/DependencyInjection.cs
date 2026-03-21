@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MyApp.IntegrationContracts.Outbox;
 using MyApp.BuildingBlocks.Application.Abstractions.Outbox;
+using MyApp.BuildingBlocks.Infrastructure.Http;
+using MyApp.IntegrationContracts.Outbox;
 using MyApp.Modules.Transport.Application.Abstractions;
 using MyApp.Modules.Transport.Infrastructure.ExternalServices;
-using MyApp.BuildingBlocks.Infrastructure.Http;
 
 namespace MyApp.Modules.Transport.Infrastructure;
 

@@ -11,25 +11,25 @@ namespace MyApp.Host.Diagnostics;
 /// </summary>
 public sealed class LoggingOptions
 {
-    public const string SectionName = "Observability:Logging";
+	public const string SectionName = "Observability:Logging";
 
-    /// <summary>Jeśli false - nie konfigurujemy NLog i zostawiasz własne logowanie.</summary>
-    public bool UseNLog { get; init; } = true;
+	/// <summary>Jeśli false - nie konfigurujemy NLog i zostawiasz własne logowanie.</summary>
+	public bool UseNLog { get; init; } = true;
 
-    /// <summary>Nazwa pliku konfiguracyjnego NLog (domyślnie w root aplikacji).</summary>
-    public string NLogConfigFile { get; init; } = "nlog.config";
+	/// <summary>Nazwa pliku konfiguracyjnego NLog (domyślnie w root aplikacji).</summary>
+	public string NLogConfigFile { get; init; } = "nlog.config";
 
-    /// <summary>
-    /// Wymusza logowanie do pliku.
-    /// null => AUTO (Windows + nie-container => true, w pozostałych => false)
-    /// </summary>
-    public bool? FileEnabled { get; init; }
+	/// <summary>
+	/// Wymusza logowanie do pliku.
+	/// null => AUTO (Windows + nie-container => true, w pozostałych => false)
+	/// </summary>
+	public bool? FileEnabled { get; init; }
 
-    /// <summary>
-    /// Katalog na logi plikowe. Jeśli null => {basedir}/logs (ustawiane jako env var dla NLog).
-    /// </summary>
-    public string? LogDirectory { get; init; }
+	/// <summary>
+	/// Katalog na logi plikowe. Jeśli null => {basedir}/logs (ustawiane jako env var dla NLog).
+	/// </summary>
+	public string? LogDirectory { get; init; }
 
-    /// <summary>Maks. liczba plików archiwalnych (rolling).</summary>
-    public int FileMaxArchiveFiles { get; init; } = 14;
+	/// <summary>Maks. liczba plików archiwalnych (rolling).</summary>
+	public int FileMaxArchiveFiles { get; init; } = 14;
 }

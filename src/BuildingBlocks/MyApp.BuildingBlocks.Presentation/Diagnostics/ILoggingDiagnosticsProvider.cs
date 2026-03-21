@@ -2,5 +2,5 @@
 
 public interface ILoggingDiagnosticsProvider
 {
-    object GetProviderInfo();
+	object GetProviderInfo();
 }

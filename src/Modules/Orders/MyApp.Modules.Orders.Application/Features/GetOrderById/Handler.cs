@@ -5,7 +5,7 @@ using MyApp.Modules.Orders.Application.Abstractions.Persistence;
 namespace MyApp.Modules.Orders.Application.Features.GetOrderById;
 
 public sealed class Handler(IOrderDomainRepository ordersDomian,
-	IOrderReadRepository ordersDto) : 
+	IOrderReadRepository ordersDto) :
 	IRequestHandler<Query, MessageResult<OrderDto>>
 {
 	public async Task<MessageResult<OrderDto>> Handle(Query request, CancellationToken ct)

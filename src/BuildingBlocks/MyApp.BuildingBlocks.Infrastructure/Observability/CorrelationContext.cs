@@ -4,11 +4,11 @@ namespace MyApp.BuildingBlocks.Infrastructure.Observability;
 
 public sealed class CorrelationContext : ICorrelationContext
 {
-    private static readonly AsyncLocal<string?> _current = new();
+	private static readonly AsyncLocal<string?> _current = new();
 
-    public string? CorrelationId
-    {
-        get => _current.Value;
-        set => _current.Value = value;
-    }
+	public string? CorrelationId
+	{
+		get => _current.Value;
+		set => _current.Value = value;
+	}
 }

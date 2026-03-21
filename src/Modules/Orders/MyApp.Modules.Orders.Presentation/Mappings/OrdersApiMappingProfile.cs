@@ -8,7 +8,7 @@ public sealed class OrdersApiMappingProfile : Profile
 {
 	public OrdersApiMappingProfile()
 	{
-        CreateMap<CreateOrderAndDispatchTransportRequestDto, Command>()
+		CreateMap<CreateOrderAndDispatchTransportRequestDto, Command>()
 			// OrderDateUtc: DTO może być DateTimeOffset? -> command DateTime?
 			.ForCtorParam(nameof(Command.OrderDateUtc),
 				opt => opt.MapFrom(src => src.OrderDateUtc.HasValue
@@ -26,11 +26,11 @@ public sealed class OrdersApiMappingProfile : Profile
 			.ForCtorParam(nameof(OrderResponseModel.Items),
 				opt => opt.MapFrom(s => s.Items));
 
-        CreateMap<CreateOrderAndDispatchTransportRequestDto, Application.Features.CreateOrder.Command>()
+		CreateMap<CreateOrderAndDispatchTransportRequestDto, Application.Features.CreateOrder.Command>()
 		// OrderDateUtc: DTO może być DateTimeOffset? -> command DateTime?
 		.ForCtorParam(nameof(Application.Features.CreateOrder.Command.OrderDateUtc),
 			opt => opt.MapFrom(src => src.OrderDateUtc.HasValue
 				? src.OrderDateUtc.Value.UtcDateTime
 				: (DateTime?)null));
-    }
+	}
 }

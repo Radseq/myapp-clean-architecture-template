@@ -6,6 +6,6 @@ namespace MyApp.Modules.Orders.Infrastructure.Repositories;
 
 public sealed class CustomerReadRepository(OrdersDbContext db) : ICustomerReadRepository
 {
-    public Task<bool> ExistsAsync(int customerId, CancellationToken ct)
-        => db.Customers.AsNoTracking().AnyAsync(c => c.Id == customerId, ct);
+	public Task<bool> ExistsAsync(int customerId, CancellationToken ct)
+		=> db.Customers.AsNoTracking().AnyAsync(c => c.Id == customerId, ct);
 }

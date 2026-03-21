@@ -42,14 +42,14 @@
 /// </summary>
 public enum MessageResultStatus
 {
-    /// <summary>Brak błędów i brak ostrzeżeń.</summary>
-    Success = 0,
+	/// <summary>Brak błędów i brak ostrzeżeń.</summary>
+	Success = 0,
 
-    /// <summary>Brak błędów, ale są ostrzeżenia (success + warnings).</summary>
-    Partial = 1,
+	/// <summary>Brak błędów, ale są ostrzeżenia (success + warnings).</summary>
+	Partial = 1,
 
-    /// <summary>Są błędy.</summary>
-    Failure = 2
+	/// <summary>Są błędy.</summary>
+	Failure = 2
 }
 
 /// <summary>
@@ -58,14 +58,14 @@ public enum MessageResultStatus
 /// </summary>
 public enum BodyLogPolicy
 {
-    /// <summary>Domyślna polityka (np. loguj body tylko dla 5xx).</summary>
-    Default = 0,
+	/// <summary>Domyślna polityka (np. loguj body tylko dla 5xx).</summary>
+	Default = 0,
 
-    /// <summary>Wymuś logowanie body niezależnie od statusu HTTP (np. handler złapał wyjątek i zwrócił kontrolowany fail).</summary>
-    Force = 1,
+	/// <summary>Wymuś logowanie body niezależnie od statusu HTTP (np. handler złapał wyjątek i zwrócił kontrolowany fail).</summary>
+	Force = 1,
 
-    /// <summary>Wyłącz logowanie body dla tego requestu.</summary>
-    Suppress = 2
+	/// <summary>Wyłącz logowanie body dla tego requestu.</summary>
+	Suppress = 2
 }
 
 /// <summary>
@@ -75,73 +75,73 @@ public readonly record struct MessageResultDiagnostics(BodyLogPolicy BodyLogPoli
 
 public class MessageResult
 {
-    protected MessageResult(
-        IReadOnlyList<ErrorData>? errors = null,
-        IReadOnlyList<ErrorData>? warnings = null,
-        MessageResultDiagnostics diagnostics = default)
-    {
-        Errors = Freeze(errors);
-        Warnings = Freeze(warnings);
-        Diagnostics = diagnostics;
-    }
+	protected MessageResult(
+		IReadOnlyList<ErrorData>? errors = null,
+		IReadOnlyList<ErrorData>? warnings = null,
+		MessageResultDiagnostics diagnostics = default)
+	{
+		Errors = Freeze(errors);
+		Warnings = Freeze(warnings);
+		Diagnostics = diagnostics;
+	}
 
-    public MessageResultDiagnostics Diagnostics { get; }
+	public MessageResultDiagnostics Diagnostics { get; }
 
-    // Status NIE jest już ustawiany ręcznie – wynika z danych.
-    public MessageResultStatus Status =>
-        Errors.Count > 0 ? MessageResultStatus.Failure :
-        Warnings.Count > 0 ? MessageResultStatus.Partial :
-        MessageResultStatus.Success;
+	// Status NIE jest już ustawiany ręcznie – wynika z danych.
+	public MessageResultStatus Status =>
+		Errors.Count > 0 ? MessageResultStatus.Failure :
+		Warnings.Count > 0 ? MessageResultStatus.Partial :
+		MessageResultStatus.Success;
 
-    public bool IsSuccess => Errors.Count == 0;
-    public bool IsPartial => Errors.Count == 0 && Warnings.Count > 0;
-    public bool HasFailed => Errors.Count > 0;
+	public bool IsSuccess => Errors.Count == 0;
+	public bool IsPartial => Errors.Count == 0 && Warnings.Count > 0;
+	public bool HasFailed => Errors.Count > 0;
 
-    public IReadOnlyList<ErrorData> Errors { get; }
-    public IReadOnlyList<ErrorData> Warnings { get; }
+	public IReadOnlyList<ErrorData> Errors { get; }
+	public IReadOnlyList<ErrorData> Warnings { get; }
 
-    public ErrorData? PrimaryError => Errors.Count > 0 ? Errors[0] : null;
+	public ErrorData? PrimaryError => Errors.Count > 0 ? Errors[0] : null;
 
-    public virtual MessageResult WithDiagnostics(MessageResultDiagnostics diagnostics)
-        => new(Errors, Warnings, diagnostics);
+	public virtual MessageResult WithDiagnostics(MessageResultDiagnostics diagnostics)
+		=> new(Errors, Warnings, diagnostics);
 
-    public virtual MessageResult ForceBodyLogging()
-        => WithDiagnostics(Diagnostics with { BodyLogPolicy = BodyLogPolicy.Force });
+	public virtual MessageResult ForceBodyLogging()
+		=> WithDiagnostics(Diagnostics with { BodyLogPolicy = BodyLogPolicy.Force });
 
-    public virtual MessageResult SuppressBodyLogging()
-        => WithDiagnostics(Diagnostics with { BodyLogPolicy = BodyLogPolicy.Suppress });
+	public virtual MessageResult SuppressBodyLogging()
+		=> WithDiagnostics(Diagnostics with { BodyLogPolicy = BodyLogPolicy.Suppress });
 
-    public static MessageResult Ok() => new();
+	public static MessageResult Ok() => new();
 
-    public static MessageResult Ok(params ErrorData[] warnings)
-        => new(errors: null, warnings: warnings ?? Array.Empty<ErrorData>());
+	public static MessageResult Ok(params ErrorData[] warnings)
+		=> new(errors: null, warnings: warnings ?? Array.Empty<ErrorData>());
 
-    // kompatybilność – dawniej Partial(...) tworzył status Partial,
-    // teraz Partial wynika z warnings.
-    public static MessageResult Partial(params ErrorData[] warnings)
-        => Ok(warnings);
+	// kompatybilność – dawniej Partial(...) tworzył status Partial,
+	// teraz Partial wynika z warnings.
+	public static MessageResult Partial(params ErrorData[] warnings)
+		=> Ok(warnings);
 
-    public static MessageResult Fail(ErrorData error)
-        => new(errors: [error]);
+	public static MessageResult Fail(ErrorData error)
+		=> new(errors: [error]);
 
-    public static MessageResult Fail(IEnumerable<ErrorData> errors)
-        => new(errors: errors?.ToArray() ?? Array.Empty<ErrorData>());
+	public static MessageResult Fail(IEnumerable<ErrorData> errors)
+		=> new(errors: errors?.ToArray() ?? Array.Empty<ErrorData>());
 
-    //// --- helpery dla MediatR pipeline / spójnego API ---
-    public static MessageResult<T> Ok<T>(T value) => MessageResult<T>.Ok(value);
+	//// --- helpery dla MediatR pipeline / spójnego API ---
+	public static MessageResult<T> Ok<T>(T value) => MessageResult<T>.Ok(value);
 
-    public static MessageResult<T> Ok<T>(T value, params ErrorData[] warnings)
-        => MessageResult<T>.Ok(value, warnings);
+	public static MessageResult<T> Ok<T>(T value, params ErrorData[] warnings)
+		=> MessageResult<T>.Ok(value, warnings);
 
-    public static MessageResult<T> Partial<T>(T value, params ErrorData[] warnings)
-        => MessageResult<T>.Ok(value, warnings);
+	public static MessageResult<T> Partial<T>(T value, params ErrorData[] warnings)
+		=> MessageResult<T>.Ok(value, warnings);
 
-    public static MessageResult<T> Fail<T>(ErrorData error) => MessageResult<T>.Fail(error);
+	public static MessageResult<T> Fail<T>(ErrorData error) => MessageResult<T>.Fail(error);
 
-    public static MessageResult<T> Fail<T>(IEnumerable<ErrorData> errors) => MessageResult<T>.Fail(errors);
+	public static MessageResult<T> Fail<T>(IEnumerable<ErrorData> errors) => MessageResult<T>.Fail(errors);
 
-    private static IReadOnlyList<ErrorData> Freeze(IReadOnlyList<ErrorData>? src)
-        => src is null || src.Count == 0
-            ? Array.Empty<ErrorData>()
-            : src is ErrorData[] a ? a : src.ToArray();
+	private static IReadOnlyList<ErrorData> Freeze(IReadOnlyList<ErrorData>? src)
+		=> src is null || src.Count == 0
+			? Array.Empty<ErrorData>()
+			: src is ErrorData[] a ? a : src.ToArray();
 }

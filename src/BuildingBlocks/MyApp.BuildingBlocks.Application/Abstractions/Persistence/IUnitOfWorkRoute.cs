@@ -8,5 +8,5 @@ public interface IUnitOfWorkRoute
 	Type UnitOfWorkServiceType { get; } // np. typeof(IOrdersUnitOfWork)
 }
 
-public sealed record UnitOfWorkRoute(Assembly RequestsAssembly, 
+public sealed record UnitOfWorkRoute(Assembly RequestsAssembly,
 	Type UnitOfWorkServiceType) : IUnitOfWorkRoute;

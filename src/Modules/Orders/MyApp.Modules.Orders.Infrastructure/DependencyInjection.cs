@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MyApp.BuildingBlocks.Infrastructure.Http;
 using MyApp.BuildingBlocks.Infrastructure.Outbox;
 using MyApp.IntegrationContracts.Outbox;
 using MyApp.Modules.Orders.Application.Abstractions.Persistence;

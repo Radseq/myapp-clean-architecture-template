@@ -6,13 +6,13 @@
 /// </summary>
 public interface IAppCache
 {
-    bool TryGet<T>(string key, out T? value);
-    void Set<T>(string key, T value, TimeSpan ttl);
+	bool TryGet<T>(string key, out T? value);
+	void Set<T>(string key, T value, TimeSpan ttl);
 
-    /// <summary>
-    /// Keyed async lock – gwarantuje “single flight” dla danego klucza.
-    /// </summary>
-    ValueTask<IAsyncDisposable> AcquireAsync(string key, CancellationToken ct);
+	/// <summary>
+	/// Keyed async lock – gwarantuje “single flight” dla danego klucza.
+	/// </summary>
+	ValueTask<IAsyncDisposable> AcquireAsync(string key, CancellationToken ct);
 
-    void Remove(string key);
+	void Remove(string key);
 }

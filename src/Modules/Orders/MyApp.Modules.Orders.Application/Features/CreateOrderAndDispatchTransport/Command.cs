@@ -12,14 +12,14 @@ public sealed record Command(
 // ISkipUnitOfWorkBehavior by nie robi³ automatycznie begin async, save async, commit, rollback
 
 public sealed record CreateOrderItemRequest(
-    int ProductId,
-    decimal UnitPrice,
-    int Quantity);
+	int ProductId,
+	decimal UnitPrice,
+	int Quantity);
 
 public sealed class CreateOrderAndDispatchTransportResponse
 {
-    public int OrderId { get; set; }
-    public Guid TransportOrderId { get; set; }
-    public string TransportStatus { get; set; } = "";
-    public string TransportCorrelationId { get; set; } = "";
+	public int OrderId { get; set; }
+	public Guid TransportOrderId { get; set; }
+	public string TransportStatus { get; set; } = "";
+	public string TransportCorrelationId { get; set; } = "";
 }

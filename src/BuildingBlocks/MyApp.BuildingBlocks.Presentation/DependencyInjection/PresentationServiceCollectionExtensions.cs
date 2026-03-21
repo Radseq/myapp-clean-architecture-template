@@ -23,12 +23,12 @@ public static class PresentationServiceCollectionExtensions
 
 		services.AddEndpointsApiExplorer();
 
-        // ProblemDetails boundary
-        services.AddSingleton<IApiErrorLocalizer, ApiErrorLocalizer>();
-        services.AddSingleton<IApiErrorHttpStatusMapper, DefaultApiErrorHttpStatusMapper>();
-        services.AddSingleton<IApiProblemDetailsFactory, ApiProblemDetailsFactory>();
+		// ProblemDetails boundary
+		services.AddSingleton<IApiErrorLocalizer, ApiErrorLocalizer>();
+		services.AddSingleton<IApiErrorHttpStatusMapper, DefaultApiErrorHttpStatusMapper>();
+		services.AddSingleton<IApiProblemDetailsFactory, ApiProblemDetailsFactory>();
 
-        services.AddLocalization(o => o.ResourcesPath = "Resources");
+		services.AddLocalization(o => o.ResourcesPath = "Resources");
 
 		services.AddMyAppObservability(config);
 
@@ -65,5 +65,5 @@ public static class PresentationServiceCollectionExtensions
 		//}
 
 		return services;
-    }
+	}
 }

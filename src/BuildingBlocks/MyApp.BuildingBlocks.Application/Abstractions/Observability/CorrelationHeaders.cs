@@ -2,5 +2,5 @@
 
 public static class CorrelationHeaders
 {
-    public const string HeaderName = "X-Correlation-ID";
+	public const string HeaderName = "X-Correlation-ID";
 }

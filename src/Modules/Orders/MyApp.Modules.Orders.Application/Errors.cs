@@ -11,29 +11,29 @@ namespace MyApp.Modules.Orders.Application;
 /// </summary>
 public static class Errors
 {
-    public static class Orders
-    {
-        public static ErrorData NotFound(int id) => new(
-            code: 2001,
-            key: "errors.orders.not_found",
-            description: "Nie znaleziono zamówienia.", // fallback PL
-            args: [id],
-            kind: ErrorKind.NotFound);
+	public static class Orders
+	{
+		public static ErrorData NotFound(int id) => new(
+			code: 2001,
+			key: "errors.orders.not_found",
+			description: "Nie znaleziono zamówienia.", // fallback PL
+			args: [id],
+			kind: ErrorKind.NotFound);
 
-        public static readonly ErrorData EmptyItems = new(
-            code: 2002,
-            key: "errors.orders.empty_items",
-            description: "Zamówienie musi zawierać co najmniej jedną pozycję.",
-            kind: ErrorKind.Validation);
-    }
+		public static readonly ErrorData EmptyItems = new(
+			code: 2002,
+			key: "errors.orders.empty_items",
+			description: "Zamówienie musi zawierać co najmniej jedną pozycję.",
+			kind: ErrorKind.Validation);
+	}
 
-    public static class Customers
-    {
-        public static ErrorData NotFound(int id) => new(
-            code: 2101,
-            key: "errors.customers.not_found",
-            description: "Nie znaleziono klienta.",
-            args: [id],
-            kind: ErrorKind.NotFound);
-    }
+	public static class Customers
+	{
+		public static ErrorData NotFound(int id) => new(
+			code: 2101,
+			key: "errors.customers.not_found",
+			description: "Nie znaleziono klienta.",
+			args: [id],
+			kind: ErrorKind.NotFound);
+	}
 }
