@@ -11,6 +11,27 @@ internal sealed class OrderReadRepository(OrdersDbContext db, IMapper mapper) : 
 {
 	private readonly IConfigurationProvider _mapperConfig = mapper.ConfigurationProvider;
 
+	//public Task<OrderDto?> GetByIdAsync(int id, CancellationToken ct)
+	//{
+	//	return db.Orders
+	//		.AsNoTracking()
+	//		.Where(o => o.Id == id)
+	//		.Select(o => new OrderDto(
+	//			o.Id,
+	//			o.CustomerId,
+	//			o.OrderDateUtc,
+	//			o.Status,
+	//			o.TotalAmount,
+	//			o.OrderItems
+	//				.Select(i => new OrderItemDto(
+	//					i.ProductId,
+	//					i.UnitPrice,
+	//					i.Quantity,
+	//					i.UnitPrice * i.Quantity))
+	//				.ToList()))
+	//		.FirstOrDefaultAsync(ct);
+	//}
+
 	public Task<OrderDto?> GetByIdAsync(int id, CancellationToken ct)
 	{
 		return db.Orders

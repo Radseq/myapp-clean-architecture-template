@@ -12,11 +12,11 @@ public sealed class RedisAppCache(
 {
 
 	private const string ReleaseLockLua = @"
-if redis.call('GET', KEYS[1]) == ARGV[1] then
-  return redis.call('DEL', KEYS[1])
-else
-  return 0
-end";
+		if redis.call('GET', KEYS[1]) == ARGV[1] then
+		  return redis.call('DEL', KEYS[1])
+		else
+		  return 0
+		end";
 	private readonly IDatabase _db = mux.GetDatabase();
 	private readonly JsonSerializerOptions _json = options.JsonOptions ?? new JsonSerializerOptions(JsonSerializerDefaults.Web);
 	private readonly string _prefix = string.IsNullOrWhiteSpace(options.KeyPrefix)
@@ -46,7 +46,7 @@ end";
 
 		try
 		{
-			value = JsonSerializer.Deserialize<T>(raw!, _json);
+			value = JsonSerializer.Deserialize<T>((string)raw!, _json);
 			return value is not null;
 		}
 		catch (Exception ex)

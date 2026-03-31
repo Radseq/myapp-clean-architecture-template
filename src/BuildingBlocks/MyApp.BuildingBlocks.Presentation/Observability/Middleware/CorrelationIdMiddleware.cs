@@ -8,7 +8,7 @@ namespace MyApp.BuildingBlocks.Presentation.Observability.Middleware;
 public sealed class CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger)
 {
 	/*
-        Sklejanie logów z wielu usług w jeden “timeline” – szukasz po CorrelationId i widzisz: API → DB → zewnętrzne API → ewentualne retry → itd.
+        Sklejanie logów z wielu usług w jeden “timeline” – po CorrelationId: API → DB → zewnętrzne API → ewentualne retry → itd.
         Obsługa produkcji/support: klient dostaje X-Correlation-ID w odpowiedzi (nawet dla 4xx/5xx) i zgłasza Ci to ID → Ty od razu znajdujesz wszystkie logi.
         Łatwe debugowanie błędów częściowych (partial success) – np. “order utworzone, ale dispatch do transportu nie wyszedł”: ostrzeżenie zawiera correlationId i możesz prześledzić oba systemy.
         Różnica względem TraceId: TraceId jest z distributed tracing (Activity/OpenTelemetry, nagłówek traceparent). To też działa cross-service, ale correlationId jest prostsze dla ludzi i dla klientów z zewnątrz (którzy nie mają traceparent). Najlepiej mieć oba: TraceId do analizy technicznej, CorrelationId do spajania logów/supportu.

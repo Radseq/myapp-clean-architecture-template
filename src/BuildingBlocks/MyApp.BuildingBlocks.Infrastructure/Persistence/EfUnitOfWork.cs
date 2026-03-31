@@ -246,7 +246,7 @@ public class EfUnitOfWork<TDbContext>(TDbContext db, ILogger<EfUnitOfWork<TDbCon
 		}, ct);
 	}
 
-	private async Task<MessageResult> CommitScopeAsync(CancellationToken ct, bool saveBeforeCommit)
+	private async Task<MessageResult> CommitScopeAsync(bool saveBeforeCommit, CancellationToken ct)
 	{
 		PopOrThrow();
 
@@ -465,7 +465,7 @@ public class EfUnitOfWork<TDbContext>(TDbContext db, ILogger<EfUnitOfWork<TDbCon
 		public async Task<MessageResult> CommitAsync(CancellationToken ct = default)
 		{
 			if (_completed) return MessageResult.Ok();
-			var res = await uow.CommitScopeAsync(ct, saveBeforeCommit: false);
+			var res = await uow.CommitScopeAsync(saveBeforeCommit: false, ct);
 			_completed = true;
 			return res;
 		}
@@ -473,7 +473,7 @@ public class EfUnitOfWork<TDbContext>(TDbContext db, ILogger<EfUnitOfWork<TDbCon
 		public async Task<MessageResult> CommitWithSaveAsync(CancellationToken ct = default)
 		{
 			if (_completed) return MessageResult.Ok();
-			var res = await uow.CommitScopeAsync(ct, saveBeforeCommit: true);
+			var res = await uow.CommitScopeAsync(saveBeforeCommit: true, ct);
 			_completed = true;
 			return res;
 		}

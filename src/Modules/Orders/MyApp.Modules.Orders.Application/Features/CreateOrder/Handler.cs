@@ -13,9 +13,6 @@ public sealed class Handler(
 	public async Task<MessageResult> Handle(
 		Command request, CancellationToken cancellationToken)
 	{
-		if (request.Items is null || request.Items.Count == 0)
-			return MessageResult.Fail(Errors.Orders.EmptyItems);
-
 		if (!await customers.ExistsAsync(request.CustomerId, cancellationToken))
 			return MessageResult.Fail(Errors.Customers.NotFound(request.CustomerId));
 

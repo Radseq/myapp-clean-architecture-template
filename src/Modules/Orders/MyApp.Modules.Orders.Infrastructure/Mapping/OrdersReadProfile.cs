@@ -14,7 +14,7 @@ public sealed class OrdersReadProfile : Profile
 				opt => opt.MapFrom(src => src.UnitPrice * src.Quantity));
 
 		CreateMap<Order, OrderDto>()
-			// record ctor param: Items (u Ciebie encja ma OrderItems)
+			// record ctor param: Items
 			.ForCtorParam(nameof(OrderDto.Items),
 				opt => opt.MapFrom(src => src.OrderItems));
 	}
